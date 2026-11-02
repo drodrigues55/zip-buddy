@@ -1,4 +1,4 @@
-# Release Candidate Automated Verification Script for Firezip
+# Release Candidate Automated Verification Script for Zip Buddy
 Param(
     [string]$Version = "1.0.11"
 )
@@ -6,18 +6,18 @@ Param(
 $ErrorActionPreference = "Stop"
 
 Write-Host "===============================================================================" -ForegroundColor Cyan
-Write-Host "             FIREZIP RELEASE CANDIDATE (RC) VERIFICATION SUITE                 " -ForegroundColor Cyan
+Write-Host "             ZIP BUDDY RELEASE CANDIDATE (RC) VERIFICATION SUITE                 " -ForegroundColor Cyan
 Write-Host "                               Version $Version                                " -ForegroundColor Cyan
 Write-Host "===============================================================================" -ForegroundColor Cyan
 Write-Host ""
 
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $distDir = Join-Path $projectRoot "dist"
-$installerExe = Join-Path $distDir "FirezipSetup-x64-v$Version.exe"
-$hashFile = Join-Path $distDir "FirezipSetup-x64-v$Version.exe.sha256"
-$wingetDir = Join-Path $projectRoot "packaging\winget\manifests\f\Firezip\Firezip\$Version"
+$installerExe = Join-Path $distDir "ZipBuddySetup-x64-v$Version.exe"
+$hashFile = Join-Path $distDir "ZipBuddySetup-x64-v$Version.exe.sha256"
+$wingetDir = Join-Path $projectRoot "packaging\winget\manifests\f\Zip Buddy\Zip Buddy\$Version"
 
-$testSandboxDir = Join-Path $env:TEMP ("Firezip_RC_Verify_" + [Guid]::NewGuid().ToString("N"))
+$testSandboxDir = Join-Path $env:TEMP ("ZipBuddy_RC_Verify_" + [Guid]::NewGuid().ToString("N"))
 
 try {
     # -------------------------------------------------------------------------
@@ -46,9 +46,9 @@ try {
     # 2. VERIFY WINGET MANIFESTS & HASH
     # -------------------------------------------------------------------------
     Write-Host "[2/5] Validating Winget manifests..." -ForegroundColor Yellow
-    $versionManifest = Join-Path $wingetDir "Firezip.Firezip.yaml"
-    $installerManifest = Join-Path $wingetDir "Firezip.Firezip.installer.yaml"
-    $localeManifest = Join-Path $wingetDir "Firezip.Firezip.locale.en-US.yaml"
+    $versionManifest = Join-Path $wingetDir "ZipBuddy.ZipBuddy.yaml"
+    $installerManifest = Join-Path $wingetDir "ZipBuddy.ZipBuddy.installer.yaml"
+    $localeManifest = Join-Path $wingetDir "ZipBuddy.ZipBuddy.locale.en-US.yaml"
 
     foreach ($m in @($versionManifest, $installerManifest, $localeManifest)) {
         if (-not (Test-Path $m)) {
@@ -88,7 +88,7 @@ try {
         throw "Silent installation failed with exit code $($installProc.ExitCode)"
     }
 
-    $installedExe = Join-Path $testSandboxDir "Firezip.UI.exe"
+    $installedExe = Join-Path $testSandboxDir "ZipBuddy.UI.exe"
     $uninstallerExe = Join-Path $testSandboxDir "unins000.exe"
 
     if (-not (Test-Path $installedExe)) {

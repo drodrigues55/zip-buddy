@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ZipBuddy.UI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ZipBuddy.UI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

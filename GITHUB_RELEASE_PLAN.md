@@ -13,11 +13,11 @@ O GitHub rejeita commits que contenham arquivos individuais superiores a **100 M
 
 | Arquivo / Localização | Tamanho Atual | Situação no Git | Risco de Rejeição pelo GitHub |
 |---|---|---|---|
-| `Firezip.UI.exe` (na raiz) | **129,40 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
+| `ZipBuddy.UI.exe` (na raiz) | **129,40 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
 | `MyUnzip.exe` (na raiz) | **129,40 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
-| `dist\FirezipSetup-x64-v1.0.0.exe` | **162,36 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
-| `dist\FirezipSetup-x64-v1.0.11.exe` | **82,28 MB** | Untracked (`??`) | ⚠️ Próximo do limite |
-| `src\Firezip.Launcher\bin\...` | 170,47 MB | Ignorado por `.gitignore` | ✅ Seguro (já ignorado) |
+| `dist\ZipBuddySetup-x64-v1.0.0.exe` | **162,36 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
+| `dist\ZipBuddySetup-x64-v1.0.11.exe` | **82,28 MB** | Untracked (`??`) | ⚠️ Próximo do limite |
+| `src\ZipBuddy.Launcher\bin\...` | 170,47 MB | Ignorado por `.gitignore` | ✅ Seguro (já ignorado) |
 | `.packages\...` (NuGet cache) | 161,80 MB | Ignorado por `.gitignore` | ✅ Seguro (já ignorado) |
 
 ### B. Princípio Fundamental de Arquitetura de Repositório
@@ -72,11 +72,11 @@ dist/
 Criar o script unificado `packaging/prepare_github_release.ps1` que prepara e organiza todos os artefatos em `dist/release/`:
 
 1. **Instalador Oficial:**
-   * `FirezipSetup-x64-v1.0.0.exe` (~162 MB)
-   * `FirezipSetup-x64-v1.0.0.exe.sha256`
+   * `ZipBuddySetup-x64-v1.0.0.exe` (~162 MB)
+   * `ZipBuddySetup-x64-v1.0.0.exe.sha256`
 2. **Pacote Portátil Oficial (Standalone):**
-   * Compactar `Firezip.UI.exe`, `FirezipUpdater.exe` e `THIRD-PARTY-NOTICES.md` em `Firezip-v1.0.0-windows-x64-portable.zip` (~40-50 MB comprimido).
-   * `Firezip-v1.0.0-windows-x64-portable.zip.sha256`
+   * Compactar `ZipBuddy.UI.exe`, `ZipBuddyUpdater.exe` e `THIRD-PARTY-NOTICES.md` em `ZipBuddy-v1.0.0-windows-x64-portable.zip` (~40-50 MB comprimido).
+   * `ZipBuddy-v1.0.0-windows-x64-portable.zip.sha256`
 3. **Manifesto do Auto-Updater:**
    * `manifest.json` assinado com RSA-SHA256 para permitir que o updater automático detecte e valide a v1.0.0.
 4. **Relatório de Verificação:**
@@ -91,9 +91,9 @@ No terminal:
 ```powershell
 git status  # Deve mostrar apenas código-fonte, sem arquivos > 100 MB
 git add .
-git commit -m "feat: Firezip v1.0.0 General Availability release"
+git commit -m "feat: Zip Buddy v1.0.0 General Availability release"
 git branch -M main
-git remote add origin https://github.com/drodrigues55/firezip.git  # se ainda não configurado
+git remote add origin https://github.com/drodrigues55/zip-buddy.git  # se ainda não configurado
 git push -u origin main
 ```
 
@@ -101,27 +101,27 @@ git push -u origin main
 Existem duas opções práticas:
 
 * **Opção A (Via Navegador / Interface Web):**
-  1. Acessar `https://github.com/drodrigues55/firezip/releases/new`.
+  1. Acessar `https://github.com/drodrigues55/zip-buddy/releases/new`.
   2. Escolher a tag: `v1.0.0`.
-  3. Título: `Firezip v1.0.0 (General Availability)`.
+  3. Título: `Zip Buddy v1.0.0 (General Availability)`.
   4. Descrição: Colar as notas da versão e a tabela de hashes SHA-256.
   5. Arrastar os arquivos de `dist/release/`:
-     * `FirezipSetup-x64-v1.0.0.exe`
-     * `FirezipSetup-x64-v1.0.0.exe.sha256`
-     * `Firezip-v1.0.0-windows-x64-portable.zip`
-     * `Firezip-v1.0.0-windows-x64-portable.zip.sha256`
+     * `ZipBuddySetup-x64-v1.0.0.exe`
+     * `ZipBuddySetup-x64-v1.0.0.exe.sha256`
+     * `ZipBuddy-v1.0.0-windows-x64-portable.zip`
+     * `ZipBuddy-v1.0.0-windows-x64-portable.zip.sha256`
      * `manifest.json`
   6. Clicar em **Publish release**.
 
 * **Opção B (Via Terminal com GitHub CLI `gh`):**
   ```powershell
-  gh release create v1.0.0 dist\release\* --title "Firezip v1.0.0 (General Availability)" --notes-file packaging\RELEASE_NOTES_v1.0.0.md
+  gh release create v1.0.0 dist\release\* --title "Zip Buddy v1.0.0 (General Availability)" --notes-file packaging\RELEASE_NOTES_v1.0.0.md
   ```
 
 ### 3.3 Submissão ao Windows Package Manager (Winget)
 Com o instalador hospedado na URL pública oficial do GitHub Releases:
 ```powershell
-wingetcreate submit packaging\winget\manifests\f\Firezip\Firezip\1.0.0
+wingetcreate submit packaging\winget\manifests\f\Zip Buddy\Zip Buddy\1.0.0
 ```
 
 ---

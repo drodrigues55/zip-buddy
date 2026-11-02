@@ -1,0 +1,251 @@
+using ZipBuddy.Core.Interfaces;
+using ZipBuddy.Core.Models;
+using ZipBuddy.Formats;
+using ZipBuddy.Infrastructure.Logging;
+using ZipBuddy.Infrastructure.Settings;
+using ZipBuddy.Infrastructure.TempFiles;
+using ZipBuddy.UI.ViewModels;
+using ZipBuddy.UI.Views;
+using ZipBuddy.Windows.Notifications;
+using ZipBuddy.Infrastructure.Update;
+using ZipBuddy.Infrastructure.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+
+namespace ZipBuddy.UI;
+
+public partial class App : Application
+{
+    private MainWindow? _window;
+    private DispatcherQueue? _dispatcherQueue;
+
+    public static IServiceProvider Services { get; private set; } = null!;
+
+    public App()
+    {
+        InitializeComponent();
+
+        var services = new ServiceCollection();
+
+        // Register core services
+        services.AddSingleton<IArchiveEngine, ArchiveEngine>();
+        services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddSingleton<ILoggingService, LoggerService>();
+        services.AddSingleton<TempFileManager>(sp =>
+        {
+            var settings = sp.GetRequiredService<ISettingsService>();
+            var logger = sp.GetService<ILoggingService>();
+            return new TempFileManager(settings.CustomTempDirectory, logger);
+        });
+        services.AddSingleton<IWindowsNotificationService, WindowsNotificationService>();
+        services.AddSingleton<ITaskSchedulerService, TaskSchedulerService>();
+        services.AddSingleton<IUpdateCoordinator, ProcessUpdateCoordinator>();
+        services.AddSingleton<ILocalizationService, LocalizationService>();
+
+        // Register ViewModels
+        services.AddSingleton<MainViewModel>();
+        services.AddTransient<SettingsViewModel>();
+
+        Services = services.BuildServiceProvider();
+    }
+
+    protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    {
+        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
+        var notificationService = Services.GetRequiredService<IWindowsNotificationService>();
+        notificationService.NotificationInvoked += OnNotificationInvoked;
+        notificationService.Initialize();
+
+        // Load settings before determining operational defaults
+        var settings = Services.GetRequiredService<ISettingsService>();
+        try
+        {
+            await settings.LoadAsync();
+
+            var loc = Services.GetRequiredService<ILocalizationService>();
+            if (!string.IsNullOrWhiteSpace(settings.Language))
+            {
+                loc.CurrentCulture = settings.Language;
+            }
+        }
+        catch
+        {
+            // Keep the application available even if settings cannot be loaded.
+        }
+
+        // Process command-line arguments for dedicated task windows
+        var cmdArgs = Environment.GetCommandLineArgs();
+        if (cmdArgs.Length > 1)
+        {
+            var verb = cmdArgs[1];
+
+            if (verb == "--extract-here" && cmdArgs.Length > 2)
+            {
+                var archive = cmdArgs[2];
+                var targetDir = Path.GetDirectoryName(archive) ?? Environment.CurrentDirectory;
+                var progressWin = new TaskProgressWindow(
+                    TaskProgressWindow.TaskType.Extract,
+                    archive,
+                    targetDir,
+                    ConflictPolicy.Overwrite,
+                    openFolderAfter: settings.OpenExtractedFolderAfterExtraction);
+                progressWin.Activate();
+                return;
+            }
+
+            if (verb == "--extract-to-folder" && cmdArgs.Length > 2)
+            {
+                var archive = cmdArgs[2];
+                var folderName = Path.GetFileNameWithoutExtension(archive);
+                var targetDir = Path.Combine(Path.GetDirectoryName(archive) ?? Environment.CurrentDirectory, folderName);
+                var progressWin = new TaskProgressWindow(
+                    TaskProgressWindow.TaskType.Extract,
+                    archive,
+                    targetDir,
+                    ConflictPolicy.Overwrite,
+                    openFolderAfter: settings.OpenExtractedFolderAfterExtraction);
+                progressWin.Activate();
+                return;
+            }
+
+            if (verb == "--extract-to" && cmdArgs.Length > 2)
+            {
+                var archive = cmdArgs[2];
+                var optionsWin = new TaskOptionsWindow(archive);
+                optionsWin.Activate();
+                return;
+            }
+
+            if (verb == "--compress-zip" && cmdArgs.Length > 2)
+            {
+                var target = cmdArgs[2];
+                var zipPath = Path.HasExtension(target) && !Directory.Exists(target)
+                    ? Path.ChangeExtension(target, ".zip")
+                    : target.TrimEnd('\\', '/') + ".zip";
+
+                var progressWin = new TaskProgressWindow(
+                    TaskProgressWindow.TaskType.Compress,
+                    zipPath,
+                    destinationPath: zipPath,
+                    compressFormat: ArchiveFormat.Zip,
+                    sourcePaths: [target]);
+                progressWin.Activate();
+                return;
+            }
+
+            if (verb == "--compress-7z" && cmdArgs.Length > 2)
+            {
+                var target = cmdArgs[2];
+                var sevenZipPath = Path.HasExtension(target) && !Directory.Exists(target)
+                    ? Path.ChangeExtension(target, ".7z")
+                    : target.TrimEnd('\\', '/') + ".7z";
+
+                var progressWin = new TaskProgressWindow(
+                    TaskProgressWindow.TaskType.Compress,
+                    sevenZipPath,
+                    destinationPath: sevenZipPath,
+                    compressFormat: ArchiveFormat.SevenZip,
+                    sourcePaths: [target]);
+                progressWin.Activate();
+                return;
+            }
+
+            // Direct archive double-click action handling (Bandizip-style)
+            if (File.Exists(cmdArgs[1]))
+            {
+                var filePath = cmdArgs[1];
+                var ext = Path.GetExtension(filePath);
+                string[] supportedArchiveExts =
+                [
+                    ".zip", ".zipx", ".jar", ".apk", ".7z", ".rar",
+                    ".tar", ".gz", ".tgz", ".bz2", ".tbz2", ".xz", ".txz", ".iso", ".cab"
+                ];
+
+                if (supportedArchiveExts.Contains(ext, StringComparer.OrdinalIgnoreCase))
+                {
+                    var action = settings.DoubleClickAction;
+                    if (string.Equals(action, "ExtractToArchiveFolder", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var folderName = Path.GetFileNameWithoutExtension(filePath);
+                        var targetDir = Path.Combine(Path.GetDirectoryName(filePath) ?? Environment.CurrentDirectory, folderName);
+                        var progressWin = new TaskProgressWindow(
+                            TaskProgressWindow.TaskType.Extract,
+                            filePath,
+                            targetDir,
+                            ConflictPolicy.Overwrite,
+                            openFolderAfter: settings.OpenExtractedFolderAfterExtraction);
+                        progressWin.Activate();
+                        return;
+                    }
+
+                    if (string.Equals(action, "ExtractHere", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var targetDir = Path.GetDirectoryName(filePath) ?? Environment.CurrentDirectory;
+                        var progressWin = new TaskProgressWindow(
+                            TaskProgressWindow.TaskType.Extract,
+                            filePath,
+                            targetDir,
+                            ConflictPolicy.Overwrite,
+                            openFolderAfter: settings.OpenExtractedFolderAfterExtraction);
+                        progressWin.Activate();
+                        return;
+                    }
+
+                    if (string.Equals(action, "ExtractToPredefinedFolder", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var configuredDir = settings.DefaultExtractionFolder;
+                        if (string.IsNullOrWhiteSpace(configuredDir) || !Directory.Exists(configuredDir))
+                        {
+                            // Configured destination is invalid or missing; prompt user instead of silently extracting to an unintended directory
+                            var optionsWin = new TaskOptionsWindow(filePath);
+                            optionsWin.Activate();
+                            return;
+                        }
+
+                        var folderName = Path.GetFileNameWithoutExtension(filePath);
+                        var targetDir = Path.Combine(configuredDir, folderName);
+                        var progressWin = new TaskProgressWindow(
+                            TaskProgressWindow.TaskType.Extract,
+                            filePath,
+                            targetDir,
+                            ConflictPolicy.Overwrite,
+                            openFolderAfter: settings.OpenExtractedFolderAfterExtraction);
+                        progressWin.Activate();
+                        return;
+                    }
+
+                    if (string.Equals(action, "PromptDestinationFolder", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var optionsWin = new TaskOptionsWindow(filePath);
+                        optionsWin.Activate();
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Standard Full UI Launch (Start Menu, Desktop shortcut, or "Open with Zip Buddy")
+        _window = new MainWindow();
+        _window.Activate();
+        _window.ShowMainPage();
+        _window.Closed += OnWindowClosed;
+
+        if (cmdArgs.Length > 1 && File.Exists(cmdArgs[1]))
+        {
+            var mainVm = Services.GetRequiredService<MainViewModel>();
+            await mainVm.OpenArchiveAsync(cmdArgs[1]);
+        }
+    }
+
+    private void OnNotificationInvoked() =>
+        _dispatcherQueue?.TryEnqueue(() => _window?.Activate());
+
+    private void OnWindowClosed(object sender, WindowEventArgs args)
+    {
+        var notificationService = Services.GetRequiredService<IWindowsNotificationService>();
+        notificationService.NotificationInvoked -= OnNotificationInvoked;
+        notificationService.Shutdown();
+    }
+}

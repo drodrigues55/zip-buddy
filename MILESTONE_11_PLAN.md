@@ -30,16 +30,16 @@
 
 ### A. Metadados e Identidade de Versão (v1.0.0 GA)
 - Atualizado `Directory.Build.props` para versão unificada `1.0.0` com todos os metadados oficiais:
-  - `Company`: Firezip Open Source Team
-  - `Authors`: Firezip Authors
-  - `Copyright`: Copyright (c) 2026 Firezip Authors
+  - `Company`: Zip Buddy Open Source Team
+  - `Authors`: Zip Buddy Authors
+  - `Copyright`: Copyright (c) 2026 Zip Buddy Authors
   - `PackageLicenseExpression`: MIT
   - `PackageProjectUrl` e `RepositoryUrl`
-- Sincronizado Inno Setup (`firezip_setup.iss` -> `1.0.0`) e inicializadores.
+- Sincronizado Inno Setup (`zipbuddy_setup.iss` -> `1.0.0`) e inicializadores.
 
 ### B. Sistema de Internacionalização (i18n)
-- Criação de `ILocalizationService` em `Firezip.Core.Interfaces`.
-- Implementação de `LocalizationService` em `Firezip.Infrastructure.Services` com catálogo de strings:
+- Criação de `ILocalizationService` em `ZipBuddy.Core.Interfaces`.
+- Implementação de `LocalizationService` em `ZipBuddy.Infrastructure.Services` com catálogo de strings:
   - Detecção automática de cultura do sistema (`CultureInfo.CurrentUICulture`).
   - Suporte explícito a `en-US` e `pt-BR`.
   - Fallback gracioso para inglês em caso de chave ausente.
@@ -48,11 +48,11 @@
 - Mensagens de erro padronizadas e localizadas em `ErrorMessageFormatter.cs`.
 
 ### C. Manifestos Oficiais do Winget v1.0.0
-- Estruturação dos manifestos em `packaging/winget/manifests/f/Firezip/Firezip/1.0.0/`:
-  - `Firezip.Firezip.yaml`
-  - `Firezip.Firezip.installer.yaml`
-  - `Firezip.Firezip.locale.en-US.yaml`
-  - `Firezip.Firezip.locale.pt-BR.yaml` (Metadados em português)
+- Estruturação dos manifestos em `packaging/winget/manifests/z/ZipBuddy/ZipBuddy/1.0.0/`:
+  - `ZipBuddy.ZipBuddy.yaml`
+  - `ZipBuddy.ZipBuddy.installer.yaml`
+  - `ZipBuddy.ZipBuddy.locale.en-US.yaml`
+  - `ZipBuddy.ZipBuddy.locale.pt-BR.yaml` (Metadados em português)
 
 ### D. Documentação Oficial
 - Atualizado `README.md` com selo de **General Availability (v1.0.0)** e contagem oficial de 121 testes.

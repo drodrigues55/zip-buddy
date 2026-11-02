@@ -67,7 +67,7 @@
 - Navegação O(1) com 10.000 itens: **12.9 µs / consulta** (Meta < 50 µs superada).
 
 ### D. Distribuição & Instalação
-- Verificação do instalador `dist/FirezipSetup-x64-v1.0.11.exe` (SHA256: `9D22907123E80EEFC161A676088FFBBF305D3CC3456AF17418BAFD6FB14A04BD`).
+- Verificação do instalador `dist/ZipBuddySetup-x64-v1.0.11.exe` (SHA256: `9D22907123E80EEFC161A676088FFBBF305D3CC3456AF17418BAFD6FB14A04BD`).
 - Instalação silenciosa em sandbox com `/CURRENTUSER`: Aprovado (ExitCode 0).
 - Desinstalação silenciosa e limpeza completa: Aprovado (ExitCode 0).
 - Validação dos manifestos Winget: `winget validate --manifest ...` aprovado com sucesso.
@@ -82,7 +82,7 @@
 
 - [x] **Passo 1:** Criar `CompatibilityTests.cs` cobrindo TAR, GZ, BZ2, nomes Unicode, caminhos longos, pastas vazias e zero-byte.
 - [x] **Passo 2:** Executar suíte completa de testes (`dotnet test`) e garantir 100% de aprovação (93/93 testes aprovados).
-- [x] **Passo 3:** Executar `Firezip.Benchmarks` e registrar métricas oficiais do Release Candidate.
+- [x] **Passo 3:** Executar `ZipBuddy.Benchmarks` e registrar métricas oficiais do Release Candidate.
 - [x] **Passo 4:** Criar script `packaging/verify_release_candidate.ps1` para validar o instalador, flags silenciosas e manifestos Winget.
 - [x] **Passo 5:** Criar `README.md` completo na raiz do repositório.
 - [x] **Passo 6:** Atualizar `MILESTONE_10_PLAN.md` com status de conclusão de Milestone 10.

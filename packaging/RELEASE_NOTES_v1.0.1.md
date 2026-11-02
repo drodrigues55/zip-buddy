@@ -1,6 +1,6 @@
-# Firezip v1.0.1 — Bandizip Extraction Experience & Polish Release 🚀
+# Zip Buddy v1.0.1 — Bandizip Extraction Experience & Polish Release 🚀
 
-A versão **v1.0.1** do Firezip eleva a experiência de uso a um novo patamar de produtividade e flexibilidade, trazendo **extração em dois cliques estilo Bandizip**, tela de progresso avançada com **dupla barra de progresso**, detalhes analíticos de **taxa de compressão**, ações pós-extração, arquitetura de **configurações isoladas em Roaming** e integração total com as diretrizes do Windows Explorer / Windows 11.
+A versão **v1.0.1** do Zip Buddy eleva a experiência de uso a um novo patamar de produtividade e flexibilidade, trazendo **extração em dois cliques estilo Bandizip**, tela de progresso avançada com **dupla barra de progresso**, detalhes analíticos de **taxa de compressão**, ações pós-extração, arquitetura de **configurações isoladas em Roaming** e integração total com as diretrizes do Windows Explorer / Windows 11.
 
 ---
 
@@ -8,7 +8,7 @@ A versão **v1.0.1** do Firezip eleva a experiência de uso a um novo patamar de
 
 ### ⚡ Extração Rápida com Dois Cliques (Estilo Bandizip)
 - **Ação Configurável via Configurações:** Defina exatamente o comportamento ao clicar duas vezes em um arquivo compactado no Windows Explorer:
-  - `Abrir na Interface do Firezip` (Padrão)
+  - `Abrir na Interface do Zip Buddy` (Padrão)
   - `Extrair na mesma pasta (Aqui)`
   - `Extrair em uma nova subpasta com o nome do arquivo`
   - `Extrair em uma pasta pré-definida` (com seleção de caminho customizável)
@@ -34,7 +34,7 @@ A versão **v1.0.1** do Firezip eleva a experiência de uso a um novo patamar de
   - ✕ **Fechar**: Encerra a janela de tarefas.
 
 ### 🛡️ Isolamento Completo das Configurações do Usuário
-- **Armazenamento em `%APPDATA%\Firezip\settings.json` (Roaming):**
+- **Armazenamento em `%APPDATA%\Zip Buddy\settings.json` (Roaming):**
   - As configurações do usuário agora são mantidas completamente desacopladas do diretório de instalação do aplicativo (`Program Files`).
   - **Imunidade a Reinstalações e Atualizações:** Reinstalar do zero, atualizar pelo instalador ou pelo Winget nunca apagará ou corromperá as preferências do usuário.
   - **Migração Transparente:** Migra automaticamente configurações herdadas de `%LocalAppData%`.
@@ -42,11 +42,11 @@ A versão **v1.0.1** do Firezip eleva a experiência de uso a um novo patamar de
 ### 🗂️ Registro de Associação de Arquivos no Windows 11 / Explorer
 - **Registro Oficial de `Capabilities` e `RegisteredApplications`:**
   - Total conformidade com a política moderna de `UserChoice` e integridade do Windows 10/11.
-  - Firezip agora é registrado formalmente como aplicativo manipulador de arquivos compactados.
+  - Zip Buddy agora é registrado formalmente como aplicativo manipulador de arquivos compactados.
   - Botão integrado em **Configurações > Abrir Configurações de Aplicativos Padrão do Windows** para associar com 1 clique nas opções do sistema.
   - Notificação de shell via `SHChangeNotify(SHCNE_ASSOCCHANGED)` para atualização imediata dos ícones no Explorer.
 
-### 💎 Diálogo Nativo "Sobre o Firezip" (AboutDialog) & i18n Dinâmica
+### 💎 Diálogo Nativo "Sobre o Zip Buddy" (AboutDialog) & i18n Dinâmica
 - Diálogo estilizado em WinUI 3 Fluent exibindo versão dinâmica, plataforma (.NET 10, Windows App SDK), licença MIT e links.
 - Tradução imediata dos rótulos da barra de ferramentas ao alterar idiomas (pt-BR / en-US) sem reiniciar o app.
 
@@ -55,15 +55,15 @@ A versão **v1.0.1** do Firezip eleva a experiência de uso a um novo patamar de
 ## 📥 Como Instalar
 
 ### Opção 1: Instalador Oficial (Recomendado)
-Baixe o instalador **`FirezipSetup-x64-v1.0.1.exe`** anexado nesta release e execute a instalação assistida.
+Baixe o instalador **`ZipBuddySetup-x64-v1.0.1.exe`** anexado nesta release e execute a instalação assistida.
 
 Para instalação silenciosa via script ou linha de comando:
 ```powershell
-FirezipSetup-x64-v1.0.1.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+ZipBuddySetup-x64-v1.0.1.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
 ```
 
 ### Opção 2: Versão Portátil (Standalone)
-Baixe **`Firezip-v1.0.1-windows-x64-portable.zip`**, descompacte em qualquer pasta e execute `Firezip.UI.exe`.
+Baixe **`ZipBuddy-v1.0.1-windows-x64-portable.zip`**, descompacte em qualquer pasta e execute `ZipBuddy.UI.exe`.
 
 ### Opção 3: Atualização Automática
 Se você já possui a versão v1.0.0 instalada, o aplicativo verificará o canal de atualização e notificará a disponibilidade da versão 1.0.1 de forma segura via HTTPS com validação criptográfica RSA-SHA256.
@@ -74,6 +74,6 @@ Se você já possui a versão v1.0.0 instalada, o aplicativo verificará o canal
 
 | Arquivo | Tamanho | Checksum SHA-256 |
 | :--- | :--- | :--- |
-| `FirezipSetup-x64-v1.0.1.exe` | 162.39 MB | `5CCA810923B35D3763777041F123E0D7C0D3CC69BD3BBDA507268F4223FD93E6` |
-| `Firezip-v1.0.1-windows-x64-portable.zip` | 88.56 MB | `7F546A6401979038AE18F10FEA1D8AA7803AB1F69B346404AC4A257E2B035C20` |
+| `ZipBuddySetup-x64-v1.0.1.exe` | 162.39 MB | `5CCA810923B35D3763777041F123E0D7C0D3CC69BD3BBDA507268F4223FD93E6` |
+| `ZipBuddy-v1.0.1-windows-x64-portable.zip` | 88.56 MB | `7F546A6401979038AE18F10FEA1D8AA7803AB1F69B346404AC4A257E2B035C20` |
 | `manifest.json` | 712 B | `C2953BC61336FD86994A3ED8730F988D3FD4895591BC6AC968F29AD1AF744ABD` |

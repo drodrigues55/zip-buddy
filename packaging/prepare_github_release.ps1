@@ -1,4 +1,4 @@
-# Prepares the complete GitHub Releases asset bundle for Firezip
+# Prepares the complete GitHub Releases asset bundle for Zip Buddy
 Param(
     [string]$Version = "1.0.0",
     [string]$PrivateKeyFile,
@@ -9,7 +9,7 @@ Param(
 $ErrorActionPreference = "Stop"
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "       FIREZIP GITHUB RELEASE PACKAGING SUITE (v$Version)  " -ForegroundColor Cyan
+Write-Host "       ZIP BUDDY GITHUB RELEASE PACKAGING SUITE (v$Version)  " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -21,7 +21,7 @@ if (-not (Test-Path $releaseDir)) {
 }
 
 # 1. Build installer
-$installerSource = Join-Path $distDir "FirezipSetup-x64-v$Version.exe"
+$installerSource = Join-Path $distDir "ZipBuddySetup-x64-v$Version.exe"
 if (-not $SkipBuild -or -not (Test-Path $installerSource)) {
     Write-Host "[1/4] Building official Inno Setup installer..." -ForegroundColor Yellow
     & (Join-Path $PSScriptRoot "build_installer.ps1") -Version $Version
@@ -32,21 +32,21 @@ if (-not $SkipBuild -or -not (Test-Path $installerSource)) {
     Write-Host "[1/4] Using existing installer: $installerSource" -ForegroundColor Green
 }
 
-$installerTarget = Join-Path $releaseDir "FirezipSetup-x64-v$Version.exe"
+$installerTarget = Join-Path $releaseDir "ZipBuddySetup-x64-v$Version.exe"
 Copy-Item $installerSource $installerTarget -Force
 
 # 2. Package Portable ZIP
 Write-Host "[2/4] Packaging portable distribution ZIP..." -ForegroundColor Yellow
-$tempPortableDir = Join-Path $env:TEMP ("Firezip_Portable_" + [Guid]::NewGuid().ToString("N"))
+$tempPortableDir = Join-Path $env:TEMP ("ZipBuddy_Portable_" + [Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $tempPortableDir -Force | Out-Null
 
 try {
-    Copy-Item (Join-Path $projectRoot "Firezip.UI.exe") (Join-Path $tempPortableDir "Firezip.UI.exe") -Force
-    Copy-Item (Join-Path $projectRoot "FirezipUpdater.exe") (Join-Path $tempPortableDir "FirezipUpdater.exe") -Force
+    Copy-Item (Join-Path $projectRoot "ZipBuddy.UI.exe") (Join-Path $tempPortableDir "ZipBuddy.UI.exe") -Force
+    Copy-Item (Join-Path $projectRoot "ZipBuddyUpdater.exe") (Join-Path $tempPortableDir "ZipBuddyUpdater.exe") -Force
     Copy-Item (Join-Path $projectRoot "README.md") (Join-Path $tempPortableDir "README.md") -Force
     Copy-Item (Join-Path $projectRoot "THIRD-PARTY-NOTICES.md") (Join-Path $tempPortableDir "THIRD-PARTY-NOTICES.md") -Force
 
-    $portableZipTarget = Join-Path $releaseDir "Firezip-v$Version-windows-x64-portable.zip"
+    $portableZipTarget = Join-Path $releaseDir "ZipBuddy-v$Version-windows-x64-portable.zip"
     if (Test-Path $portableZipTarget) { Remove-Item $portableZipTarget -Force }
 
     Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -63,7 +63,7 @@ Write-Host "[3/4] Generating and signing update manifest..." -ForegroundColor Ye
 $releaseScript = Join-Path $PSScriptRoot "release_update_package.ps1"
 
 if (-not $PrivateKeyFile) {
-    $defaultKey = Join-Path $PSScriptRoot "keys\firezip_private_key.xml"
+    $defaultKey = Join-Path $PSScriptRoot "keys\zipbuddy_private_key.xml"
     if (Test-Path $defaultKey) {
         $PrivateKeyFile = $defaultKey
     }

@@ -1,4 +1,4 @@
-# Firezip 🔥🗜️
+# Zip Buddy 🔥🗜️
 
 <p align="center">
   <strong>The ultra-fast, modern archive manager crafted for Windows 11.</strong>
@@ -18,7 +18,7 @@
 
 ## ⚡ Overview
 
-**Firezip** is an open-source, modern archive manager engineered in C# on **.NET 10** with **WinUI 3** and the **Windows App SDK**. Built to eliminate the clunky, decades-old interfaces of legacy archivers, Firezip delivers a fluid **Mica backdrop**, native dark/light themes, multi-language support (**English & Português do Brasil**), seamless Windows Explorer shell integration with official app icons, dedicated micro-task progress windows, complete offline network isolation, and enterprise-grade security hardening against decompression vulnerabilities.
+**Zip Buddy** is an open-source, modern archive manager engineered in C# on **.NET 10** with **WinUI 3** and the **Windows App SDK**. Built to eliminate the clunky, decades-old interfaces of legacy archivers, Zip Buddy delivers a fluid **Mica backdrop**, native dark/light themes, multi-language support (**English & Português do Brasil**), seamless Windows Explorer shell integration with official app icons, dedicated micro-task progress windows, complete offline network isolation, and enterprise-grade security hardening against decompression vulnerabilities.
 
 ---
 
@@ -51,7 +51,7 @@
 
 ### 📁 Native Windows Shell Integration
 - **Clean Context Menu:** Direct integration into the Windows File Explorer right-click menu with native application branding icons (`{exe},0`).
-- **Cascading Submenu Option:** Group all commands under a single `Firezip >` menu or show individual top-level verbs.
+- **Cascading Submenu Option:** Group all commands under a single `Zip Buddy >` menu or show individual top-level verbs.
 - **Smart Task Verbs:**
   - `Extract Here` (`--extract-here`)
   - `Extract to Folder` (`--extract-to-folder`)
@@ -89,59 +89,59 @@ Measured on a standard Windows 11 x64 environment running .NET 10 Release build:
 
 ### Option 1: Windows Package Manager (Winget)
 ```powershell
-winget install Firezip.Firezip
+winget install ZipBuddy.ZipBuddy
 ```
 
 ### Option 2: Setup Installer (Inno Setup)
-Download `FirezipSetup-x64-v1.0.0.exe` from the [Latest Release](https://github.com/drodrigues55/firezip/releases).
+Download `ZipBuddySetup-x64-v1.0.0.exe` from the [Latest Release](https://github.com/drodrigues55/zip-buddy/releases).
 
 **Silent / Unattended Install:**
 ```powershell
-FirezipSetup-x64-v1.0.0.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+ZipBuddySetup-x64-v1.0.0.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
 ```
 
 ### Option 3: Portable Executable
-Download the standalone single-file `Firezip.UI.exe` directly from the release page. Run anywhere without administrator rights.
+Download the standalone single-file `ZipBuddy.UI.exe` directly from the release page. Run anywhere without administrator rights.
 
 ---
 
 ## 💻 Command-Line Interface (CLI)
 
-Firezip supports automated scripting and Explorer shell verbs through command-line arguments:
+Zip Buddy supports automated scripting and Explorer shell verbs through command-line arguments:
 
 ```powershell
 # Extract archive directly into current directory
-Firezip.UI.exe --extract-here "C:\path\to\archive.zip"
+ZipBuddy.UI.exe --extract-here "C:\path\to\archive.zip"
 
 # Extract archive into a subfolder named after the archive
-Firezip.UI.exe --extract-to-folder "C:\path\to\archive.7z"
+ZipBuddy.UI.exe --extract-to-folder "C:\path\to\archive.7z"
 
 # Open the task options dialog to choose extraction target
-Firezip.UI.exe --extract-to "C:\path\to\archive.tar.gz"
+ZipBuddy.UI.exe --extract-to "C:\path\to\archive.tar.gz"
 
 # Quickly compress one or multiple files/folders into a ZIP
-Firezip.UI.exe --compress-zip "C:\path\to\file1.txt" "C:\path\to\folder2"
+ZipBuddy.UI.exe --compress-zip "C:\path\to\file1.txt" "C:\path\to\folder2"
 
 # Quickly compress into a high-compression 7-Zip (.7z) archive
-Firezip.UI.exe --compress-7z "C:\path\to\data_directory"
+ZipBuddy.UI.exe --compress-7z "C:\path\to\data_directory"
 ```
 
 ---
 
 ## 🛠️ Architecture & Solution Layout
 
-Firezip follows clean architecture principles with distinct separation of concerns:
+Zip Buddy follows clean architecture principles with distinct separation of concerns:
 
 ```
 src/
-├── Firezip.Core/            # Domain models, interfaces, and algorithms (PathSanitizer, RangeCollections)
-├── Firezip.Formats/         # Format providers (ZIP, 7Z, TAR, GZ, BZ2, XZ, RAR), ArchiveEngine, FormatDetector
-├── Firezip.Infrastructure/  # Settings service, logging, update checker (GitHub Releases API)
-├── Firezip.Windows/         # Win32 P/Invoke, Shell context menu registration, File associations
-├── Firezip.UI/              # WinUI 3 desktop application, MVVM ViewModels, Mica window, Dialogs
-├── Firezip.Launcher/        # Single-file bundle bootstrapping and process management
-├── Firezip.Benchmarks/      # Benchmark suite measuring throughput and query latencies
-└── Firezip.Tests/           # xUnit test suite (Security, Compatibility, Options, Detection) - 93 tests
+├── ZipBuddy.Core/            # Domain models, interfaces, and algorithms (PathSanitizer, RangeCollections)
+├── ZipBuddy.Formats/         # Format providers (ZIP, 7Z, TAR, GZ, BZ2, XZ, RAR), ArchiveEngine, FormatDetector
+├── ZipBuddy.Infrastructure/  # Settings service, logging, update checker (GitHub Releases API)
+├── ZipBuddy.Windows/         # Win32 P/Invoke, Shell context menu registration, File associations
+├── ZipBuddy.UI/              # WinUI 3 desktop application, MVVM ViewModels, Mica window, Dialogs
+├── ZipBuddy.Launcher/        # Single-file bundle bootstrapping and process management
+├── ZipBuddy.Benchmarks/      # Benchmark suite measuring throughput and query latencies
+└── ZipBuddy.Tests/           # xUnit test suite (Security, Compatibility, Options, Detection) - 93 tests
 ```
 
 ---
@@ -156,17 +156,17 @@ src/
 ### Build Instructions
 ```powershell
 # Clone repository
-git clone https://github.com/drodrigues55/firezip.git
-cd firezip
+git clone https://github.com/drodrigues55/zip-buddy.git
+cd zip-buddy
 
 # Build entire solution
-dotnet build Firezip.slnx -c Release
+dotnet build ZipBuddy.slnx -c Release
 
 # Run complete test suite (93 tests)
 dotnet test
 
 # Run performance benchmarks
-dotnet run --project src/Firezip.Benchmarks -c Release
+dotnet run --project src/ZipBuddy.Benchmarks -c Release
 
 # Build official Inno Setup installer & Winget manifests
 powershell -ExecutionPolicy Bypass -File packaging/build_installer.ps1
@@ -178,4 +178,4 @@ powershell -ExecutionPolicy Bypass -File packaging/verify_release_candidate.ps1
 
 ## 📄 License
 
-Firezip is released under the **MIT License**. See [LICENSE](LICENSE) for details.
+Zip Buddy is released under the **MIT License**. See [LICENSE](LICENSE) for details.

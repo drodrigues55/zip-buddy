@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ZipBuddy.Benchmarks/ZipBuddy.Benchmarks.csproj" />
+    <Project Path="src/ZipBuddy.Core/ZipBuddy.Core.csproj" />
+    <Project Path="src/ZipBuddy.Formats/ZipBuddy.Formats.csproj" />
+    <Project Path="src/ZipBuddy.Infrastructure/ZipBuddy.Infrastructure.csproj" />
+    <Project Path="src/ZipBuddy.Launcher/ZipBuddy.Launcher.csproj" />
+    <Project Path="src/ZipBuddy.Tests/ZipBuddy.Tests.csproj" />
+    <Project Path="src/ZipBuddy.UI/ZipBuddy.UI.csproj" />
+    <Project Path="src/ZipBuddy.Updater/ZipBuddy.Updater.csproj" />
+    <Project Path="src/ZipBuddy.Windows/ZipBuddy.Windows.csproj" />
+  </Folder>
+</Solution>

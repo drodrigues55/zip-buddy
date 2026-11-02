@@ -21,7 +21,7 @@ Param(
     [string]$MinimumSupportedVersion = "1.0.0",
 
     [Parameter(Mandatory=$false)]
-    [string]$ReleaseNotes = "Firezip Update",
+    [string]$ReleaseNotes = "Zip Buddy Update",
 
     [Parameter(Mandatory=$false)]
     [switch]$Mandatory,
@@ -33,7 +33,7 @@ Param(
 $ErrorActionPreference = "Stop"
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "         FIREZIP UPDATE RELEASE ENGINEERING SCRIPT        " -ForegroundColor Cyan
+Write-Host "         ZIP BUDDY UPDATE RELEASE ENGINEERING SCRIPT        " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $scriptDir = $PSScriptRoot
@@ -48,21 +48,21 @@ if (-not (Test-Path $OutputDir)) {
 
 # Resolve Private Key:
 # Priority 1: $PrivateKeyXml argument
-# Priority 2: $env:FIREZIP_RELEASE_PRIVATE_KEY or $env:MYUNZIP_RELEASE_PRIVATE_KEY
+# Priority 2: $env:ZIPBUDDY_RELEASE_PRIVATE_KEY or $env:MYUNZIP_RELEASE_PRIVATE_KEY
 # Priority 3: $PrivateKeyFile argument
 # Priority 4: Development fallback (only if -Development specified)
 $finalPrivateKeyXml = $null
 
 if ($PrivateKeyXml) {
     $finalPrivateKeyXml = $PrivateKeyXml
-} elseif ($env:FIREZIP_RELEASE_PRIVATE_KEY) {
-    $finalPrivateKeyXml = $env:FIREZIP_RELEASE_PRIVATE_KEY
+} elseif ($env:ZIPBUDDY_RELEASE_PRIVATE_KEY) {
+    $finalPrivateKeyXml = $env:ZIPBUDDY_RELEASE_PRIVATE_KEY
 } elseif ($env:MYUNZIP_RELEASE_PRIVATE_KEY) {
     $finalPrivateKeyXml = $env:MYUNZIP_RELEASE_PRIVATE_KEY
 } elseif ($PrivateKeyFile -and (Test-Path $PrivateKeyFile)) {
     $finalPrivateKeyXml = Get-Content -Path $PrivateKeyFile -Raw
 } elseif ($Development) {
-    $devKeyFile = Join-Path $scriptDir "keys\firezip_private_key.xml"
+    $devKeyFile = Join-Path $scriptDir "keys\zipbuddy_private_key.xml"
     if (Test-Path $devKeyFile) {
         Write-Warning "DEVELOPMENT MODE: Using local development/testing private key. DO NOT USE FOR PUBLIC PRODUCTION RELEASES!"
         $finalPrivateKeyXml = Get-Content -Path $devKeyFile -Raw
@@ -70,16 +70,16 @@ if ($PrivateKeyXml) {
 }
 
 if (-not $finalPrivateKeyXml) {
-    Write-Error "Production release private key not provided! Set env:FIREZIP_RELEASE_PRIVATE_KEY or supply -PrivateKeyXml/-PrivateKeyFile, or pass -Development for local testing."
+    Write-Error "Production release private key not provided! Set env:ZIPBUDDY_RELEASE_PRIVATE_KEY or supply -PrivateKeyXml/-PrivateKeyFile, or pass -Development for local testing."
 }
 
 # 1. Package validation & SHA-256 calculation
 if (-not $PackagePath) {
     # Default to installer in dist
-    $PackagePath = Join-Path $OutputDir "FirezipSetup-x64-v$Version.exe"
+    $PackagePath = Join-Path $OutputDir "ZipBuddySetup-x64-v$Version.exe"
     if (-not (Test-Path $PackagePath)) {
-        # Check root Firezip.UI.exe
-        $PackagePath = Join-Path $projectRoot "Firezip.UI.exe"
+        # Check root ZipBuddy.UI.exe
+        $PackagePath = Join-Path $projectRoot "ZipBuddy.UI.exe"
     }
 }
 
@@ -94,7 +94,7 @@ Write-Host "    SHA-256: $sha256" -ForegroundColor Green
 
 if (-not $DownloadUrl) {
     $fileName = [System.IO.Path]::GetFileName($PackagePath)
-    $DownloadUrl = "https://github.com/drodrigues55/firezip/releases/download/v$Version/$fileName"
+    $DownloadUrl = "https://github.com/drodrigues55/zip-buddy/releases/download/v$Version/$fileName"
 }
 
 Write-Host "[*] Target Download URL: $DownloadUrl" -ForegroundColor White
@@ -135,7 +135,7 @@ $manifestPath = Join-Path $OutputDir "manifest.json"
 Write-Host "[*] Written update manifest to: $manifestPath" -ForegroundColor Green
 
 # 5. Verify the generated manifest using the Public Key
-$publicKeyFile = Join-Path $scriptDir "keys\firezip_public_key.xml"
+$publicKeyFile = Join-Path $scriptDir "keys\zipbuddy_public_key.xml"
 if (Test-Path $publicKeyFile) {
     $publicKeyXml = Get-Content -Path $publicKeyFile -Raw
     $verifyRsa = [System.Security.Cryptography.RSA]::Create()

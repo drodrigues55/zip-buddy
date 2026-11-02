@@ -441,17 +441,17 @@ Implement context menu integration.
 
 ### Context Menu Visuals & Icon Branding
 
-* **No Redundant Text Suffix:** Do NOT append `(Firezip)` in parentheses to the menu item text labels.
-* **Native Explorer Icon Integration:** Assign the application icon directly to each context menu verb via the registry `Icon` property (e.g., `Icon="{app}\Firezip.UI.exe,0"`):
-  - On Windows 10 and Windows 11, Windows Explorer renders the Firezip brand icon directly beside each context menu entry.
+* **No Redundant Text Suffix:** Do NOT append `(Zip Buddy)` in parentheses to the menu item text labels.
+* **Native Explorer Icon Integration:** Assign the application icon directly to each context menu verb via the registry `Icon` property (e.g., `Icon="{app}\ZipBuddy.UI.exe,0"`):
+  - On Windows 10 and Windows 11, Windows Explorer renders the Zip Buddy brand icon directly beside each context menu entry.
   - Menu labels remain clean and uncluttered:
-    - `Open with Firezip`
+    - `Open with Zip Buddy`
     - `Extract Here`
     - `Extract to "<ArchiveName>\"`
     - `Extract to...`
     - `Compress to ZIP`
     - `Compress to 7Z`
-* **Cascading Menu Option:** Provide an optional setting to group all Firezip verbs into a single cascading submenu (`Firezip >` with icon) to prevent polluting the top-level Windows Explorer context menu.
+* **Cascading Menu Option:** Provide an optional setting to group all Zip Buddy verbs into a single cascading submenu (`Zip Buddy >` with icon) to prevent polluting the top-level Windows Explorer context menu.
 * **Configurable Verbs:** Allow users to enable/disable individual context menu entries via Settings.
 * **Modern Windows 11 Support:** Prefer modern Windows 11 context menu integration (sparse package / `IExplorerCommand`) where technically appropriate, while maintaining robust classic registry shell verbs.
 
@@ -480,7 +480,7 @@ When a user clicks a context menu action in Windows Explorer, the application **
      - Focused modal dialog for destination folder selection and extraction options.
      - Transitions directly to `TaskProgressWindow` upon confirmation, closing immediately once done.
    - **Full `MainWindow` Execution:**
-     - Opened **only** when the user explicitly clicks `Open with Firezip`, double-clicks an associated archive file, or launches the app from the Start Menu / Desktop.
+     - Opened **only** when the user explicitly clicks `Open with Zip Buddy`, double-clicks an associated archive file, or launches the app from the Start Menu / Desktop.
 
 ---
 
@@ -629,7 +629,7 @@ Settings should include:
 ### Explorer
 
 * Enable context menu with native brand icons
-* Group into cascading context menu (`Firezip >`) or show individual verbs
+* Group into cascading context menu (`Zip Buddy >`) or show individual verbs
 * Configure enabled/disabled context menu entries
 * Auto-close task progress window on successful completion
 * Show notification upon task completion
@@ -928,7 +928,7 @@ Deliver:
 Deliver:
 
 * File associations for supported archive formats (.zip, .7z, .rar, .tar, .gz, .bz2)
-* Explorer context menu with native application icon integration (clean labels without `(Firezip)` text suffix)
+* Explorer context menu with native application icon integration (clean labels without `(Zip Buddy)` text suffix)
 * Dedicated lightweight task windows:
   - `TaskProgressWindow`: compact modal progress window for quick extraction/compression verbs, auto-closing upon completion
   - `TaskOptionsWindow`: standalone destination/options dialog for "Extract to...", transitioning to progress without launching full UI
@@ -985,11 +985,11 @@ Deliver:
 Deliver:
 
 * Standalone Windows Installer (Inno Setup / WiX)
-* Windows Package Manager (Winget) official manifest suite (`Firezip.Firezip`)
+* Windows Package Manager (Winget) official manifest suite (`ZipBuddy.ZipBuddy`)
 * Clean Uninstaller (`unins000.exe`) with complete registry and association cleanup
 * Update mechanism via GitHub Releases API (`UpdateChecker.cs`)
 * Version migration & settings preservation
-* Dedicated sub-plan: [MILESTONE_9_PLAN.md](file:///c:/Users/DRODRIGUES/Documents/firezip/MILESTONE_9_PLAN.md)
+* Dedicated sub-plan: [MILESTONE_9_PLAN.md](file:///c:/Users/DRODRIGUES/Documents/zip-buddy/MILESTONE_9_PLAN.md)
 
 ---
 
@@ -1004,9 +1004,9 @@ Consolidação completa da base técnica do produto antes da etapa de publicaç�
 * **Internacionalização (i18n):** Suporte nativo e alternância em tempo de execução para Português do Brasil (`pt-BR`) e Inglês (`en-US`), com catálogo de recursos e formatação localizada.
 * **Experiência de Extração com Duplo Clique (Estilo Bandizip):** Ação configurável via preferências para duplo clique em arquivos compactados (`Abrir na Interface`, `Extrair Aqui`, `Extrair em Subpasta`, `Extrair em Pasta Pré-definida`, `Perguntar Destino`), executando diretamente sem carregar a interface pesada.
 * **Interface de Extração Avançada (`TaskProgressWindow`):** Dupla barra de progresso (barra do item atual `ItemProgressBar` + barra global `TaskProgressBar`), painel expansível (*expander*) com estatísticas analíticas de taxa de compressão (ratio %, tamanhos compactado/descompactado, espaço economizado, velocidade MB/s, tempo e ETA), caixas de seleção (*tickers*) para abrir pasta e manter janela aberta, e botões pós-extração (*Abrir Pasta*, *Excluir arquivo de origem .zip*, *Fechar*).
-* **Isolamento de Configurações:** Preferências do usuário armazenadas de forma desacoplada em `%APPDATA%\Firezip\settings.json` (Roaming), imunes a desinstalações limpas, reinstalações ou atualizações do sistema.
-* **Integração com Shell do Windows 10/11:** Registro formal de `Capabilities`, `RegisteredApplications`, chaves de `OpenWithProgids`, `Applications\Firezip.UI.exe` e disparo de notificação nativa `SHChangeNotify(SHCNE_ASSOCCHANGED)`.
-* **Diálogo Nativo "Sobre o Firezip":** Diálogo WinUI 3 Fluent exibindo versão do assembly, runtime, licença MIT e links oficiais.
+* **Isolamento de Configurações:** Preferências do usuário armazenadas de forma desacoplada em `%APPDATA%\Zip Buddy\settings.json` (Roaming), imunes a desinstalações limpas, reinstalações ou atualizações do sistema.
+* **Integração com Shell do Windows 10/11:** Registro formal de `Capabilities`, `RegisteredApplications`, chaves de `OpenWithProgids`, `Applications\ZipBuddy.UI.exe` e disparo de notificação nativa `SHChangeNotify(SHCNE_ASSOCCHANGED)`.
+* **Diálogo Nativo "Sobre o Zip Buddy":** Diálogo WinUI 3 Fluent exibindo versão do assembly, runtime, licença MIT e links oficiais.
 
 ---
 
@@ -1017,8 +1017,8 @@ Consolidação completa da base técnica do produto antes da etapa de publicaç�
 
 ### 1. Especificação do Artefato
 * **Plataforma & Arquitetura:** Windows 10 / Windows 11 (x64 nativo).
-* **Versão Unificada:** Sincronizada em `Directory.Build.props`, `firezip_setup.iss`, scripts de build e manifestos.
-* **Nomenclatura do Instalador:** `FirezipSetup-x64-v<Version>.exe` (padronizado e sem caracteres especiais).
+* **Versão Unificada:** Sincronizada em `Directory.Build.props`, `zipbuddy_setup.iss`, scripts de build e manifestos.
+* **Nomenclatura do Instalador:** `ZipBuddySetup-x64-v<Version>.exe` (padronizado e sem caracteres especiais).
 * **Tipo Real do Instalador:** **`inno`** (Inno Setup Compiler 6.7.3).  
   *Critério Mandatório:* O WinGet deve identificar explicitamente `InstallerType: inno`. Nunca assumir `InstallerType: exe` genérico.
 * **Método de Empacotamento:** Automação via script PowerShell `packaging/build_installer.ps1`, que compila os binários em Release, cria o payload comprimido e executa `ISCC.exe`.
@@ -1026,14 +1026,14 @@ Consolidação completa da base técnica do produto antes da etapa de publicaç�
 ### 2. Validação do Comportamento do Instalador
 * `[Implementado]` **Instalação Silenciosa:** Suporte nativo aos switches Inno Setup:
   ```powershell
-  FirezipSetup-x64-v<Version>.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+  ZipBuddySetup-x64-v<Version>.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
   ```
 * `[Implementado]` **Instalação com Progresso (SilentWithProgress):**
   ```powershell
-  FirezipSetup-x64-v<Version>.exe /SILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+  ZipBuddySetup-x64-v<Version>.exe /SILENT /SUPPRESSMSGBOXES /NORESTART /SP-
   ```
 * `[Implementado]` **Comportamento Não Interativo:** Configuração de `skipifsilent` em todas as entradas de inicialização pós-instalação (`[Run]`) do Inno Setup para garantir que nenhum diálogo, aplicativo ou navegador seja aberto durante a execução silenciosa em pipelines do WinGet.
-* `[Implementado]` **Escopo e Localização:** `Scope: machine`, instalando por padrão no diretório de programas do Windows: `{autopf}\Firezip` (`C:\Program Files\Firezip`).
+* `[Implementado]` **Escopo e Localização:** `Scope: machine`, instalando por padrão no diretório de programas do Windows: `{autopf}\Zip Buddy` (`C:\Program Files\Zip Buddy`).
 * `[Implementado]` **Controle de Elevação e UAC:** Instalação em máquina exige elevação de privilégios de administrador. `PrivilegesRequiredOverridesAllowed=commandline dialog` configurado para compatibilidade.
 * `[Implementado]` **Entrada em Apps & Features (Registro de Desinstalação):**
   - Chave de desinstalação: `HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\{8B036367-AE8C-4D88-B1F3-E18F2E23A534}_is1`
@@ -1048,13 +1048,13 @@ Consolidação completa da base técnica do produto antes da etapa de publicaç�
 > **Objetivo:** Executar auditoria profunda de segurança, integridade de componentes e ausência de comportamento persistente indevido.
 
 ### 1. Garantia da Arquitetura de Isolamento de Rede
-Confirmar e auditar que a divisão arquitetural do Firezip permanece estritamente preservada:
+Confirmar e auditar que a divisão arquitetural do Zip Buddy permanece estritamente preservada:
 ```text
-Firezip.UI.exe
+ZipBuddy.UI.exe
     └── Aplicativo Principal & Motor de Extração
         └── 100% ISOLADO DA REDE (Zero permissões de rede, sem chamadas HTTP, sem sockets)
 
-FirezipUpdater.exe
+ZipBuddyUpdater.exe
     └── Processo Separado de Atualização
         └── Conexões HTTPS restritas aos endpoints de release oficial
         └── Validação criptográfica de integridade de pacote com assinatura RSA-SHA256 (2048 bits)
@@ -1063,15 +1063,15 @@ FirezipUpdater.exe
 
 ### 2. Matriz de Auditoria do Instalador
 * `[Implementado]` **Integridade do Instalador:** Compressão de alta taxa `lzma2/ultra64` em modo sólido com processo isolado (`LZMAUseSeparateProcess=yes`).
-* `[Implementado]` **Ausência de Arquivos Inesperados:** Apenas `Firezip.UI.exe`, `FirezipUpdater.exe` e os aliases legados são instalados em `{app}`.
+* `[Implementado]` **Ausência de Arquivos Inesperados:** Apenas `ZipBuddy.UI.exe`, `ZipBuddyUpdater.exe` e os aliases legados são instalados em `{app}`.
 * `[Implementado]` **Autonomia de Runtimes & Dependências:** Executável publicado como single-file com assemblies do .NET 10 e Windows App SDK empacotados, sem dependências externas ausentes ou instaladores secundários em cadeia.
 * `[Implementado]` **Componentes Persistentes & Tarefas Agendadas:**
-  - O instalador pode criar opcionalmente a tarefa agendada `Firezip\FirezipUpdateTask` (`schtasks /Create`) para checagem diária silenciosa de atualizações via `FirezipUpdater.exe --auto --silent`.
-  - A desinstalação garante a exclusão estrita da tarefa (`schtasks /Delete /TN "Firezip\FirezipUpdateTask" /F`).
+  - O instalador pode criar opcionalmente a tarefa agendada `Zip Buddy\ZipBuddyUpdateTask` (`schtasks /Create`) para checagem diária silenciosa de atualizações via `ZipBuddyUpdater.exe --auto --silent`.
+  - A desinstalação garante a exclusão estrita da tarefa (`schtasks /Delete /TN "Zip Buddy\ZipBuddyUpdateTask" /F`).
   - Nenhum serviço Windows de inicialização em segundo plano é criado.
-* `[Implementado]` **Auditoria de Registro:** Gravação apenas de chaves oficiais de shell (`Firezip.Archive`), associações (`OpenWithProgids`), capacidades do Windows 10/11 (`Capabilities`, `RegisteredApplications`) e desinstalação.
+* `[Implementado]` **Auditoria de Registro:** Gravação apenas de chaves oficiais de shell (`ZipBuddy.Archive`), associações (`OpenWithProgids`), capacidades do Windows 10/11 (`Capabilities`, `RegisteredApplications`) e desinstalação.
 * `[Implementado]` **Desinstalação Completa:** Remoção total de todos os arquivos de `{app}` e das chaves de registro.
-* `[Implementado]` **Preservação de Dados do Usuário:** A desinstalação não apaga o diretório `%APPDATA%\Firezip`, garantindo que reinstalações e atualizações não causem perda de preferências do usuário.
+* `[Implementado]` **Preservação de Dados do Usuário:** A desinstalação não apaga o diretório `%APPDATA%\Zip Buddy`, garantindo que reinstalações e atualizações não causem perda de preferências do usuário.
 
 ---
 
@@ -1083,14 +1083,14 @@ FirezipUpdater.exe
 ### Checklist Obrigatório Pré-Submissão (26 Itens)
 
 ```text
-[x] 01. Instalador final x64 gerado (FirezipSetup-x64-v1.0.0.exe / v1.0.1.exe)
+[x] 01. Instalador final x64 gerado (ZipBuddySetup-x64-v1.0.0.exe / v1.0.1.exe)
 [x] 02. InstallerType identificado corretamente como 'inno'
 [x] 03. Instalação silenciosa testada localmente (/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-)
 [x] 04. SilentWithProgress testado localmente (/SILENT /SUPPRESSMSGBOXES /NORESTART /SP-)
 [ ] 05. Instalação feita a partir de terminal não elevado (UAC prompt e fallback)
 [ ] 06. Instalação em Windows Sandbox limpo testada
 [x] 07. Aplicativo inicia após instalação
-[x] 08. Executável principal pode ser localizado em C:\Program Files\Firezip\Firezip.UI.exe
+[x] 08. Executável principal pode ser localizado em C:\Program Files\Zip Buddy\ZipBuddy.UI.exe
 [x] 09. Aplicativo executa corretamente e realiza operações de arquivo após instalação
 [x] 10. Desinstalação silenciosa testada (unins000.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART)
 [x] 11. Desinstalação limpa confirmada (arquivos e atalhos removidos)
@@ -1098,12 +1098,12 @@ FirezipUpdater.exe
 [x] 13. Runtime necessário verificado (pacote auto-contido .NET 10 + WinAppSDK)
 [x] 14. SHA256 calculado via algoritmo oficial SHA-256
 [x] 15. SHA256 confirmado e confrontado com o binário distribuído
-[x] 16. URL final usa HTTPS (https://github.com/drodrigues55/firezip/releases/...)
+[x] 16. URL final usa HTTPS (https://github.com/drodrigues55/zip-buddy/releases/...)
 [x] 17. URL aponta diretamente para o instalador (.exe direto)
 [x] 18. URL não depende de redirect dinâmico ou página intermediária
 [x] 19. URL é estável e imutável
 [x] 20. URL é específica para a versão (/download/v1.0.0/ ou /v1.0.1/)
-[x] 21. URL pertence a uma fonte controlada pelo publisher (github.com/drodrigues55/firezip)
+[x] 21. URL pertence a uma fonte controlada pelo publisher (github.com/drodrigues55/zip-buddy)
 [x] 22. Página oficial do projeto aponta para o instalador (README.md e GitHub Releases)
 [x] 23. Manifesto WinGet multi-file criado no schema 1.9.0
 [x] 24. 'winget validate --manifest' passa com êxito (100% de conformidade de schema)
@@ -1118,7 +1118,7 @@ FirezipUpdater.exe
 | **05. Terminal não elevado** | Teste executado em console de build elevado | Validar elevação UAC adequada | Rodar instalador em PowerShell não admin e verificar elevação UAC | Equipe Release | Instalação solicita UAC e completa com sucesso |
 | **06. Windows Sandbox** | Ambiente de desenvolvimento possui ferramentas já instaladas | Garantir ausência de dependências ocultas | Executar script em Windows Sandbox puro (sem .NET pré-instalado) | Equipe QA | App abre e extrai sem erros no Sandbox |
 | **25. winget install local** | Requer pacote e manifesto em máquina isolada | Simular execução exata do pipeline do WinGet | Executar `winget install --manifest <caminho>` | Equipe Release | Comando conclui com código 0 e registra app |
-| **26. Desinstalação pós-winget** | Validar desinstalação disparada pelo WinGet CLI | Garantir desinstalação limpa via gerenciador | Executar `winget uninstall Firezip.Firezip` | Equipe Release | WinGet remove pacote sem erros |
+| **26. Desinstalação pós-winget** | Validar desinstalação disparada pelo WinGet CLI | Garantir desinstalação limpa via gerenciador | Executar `winget uninstall ZipBuddy.ZipBuddy` | Equipe Release | WinGet remove pacote sem erros |
 
 ---
 
@@ -1128,15 +1128,15 @@ FirezipUpdater.exe
 > **Objetivo:** Estruturar o conjunto oficial de manifestos no formato multi-file aceito pelo WinGet.
 
 ### 1. Estrutura de Diretórios e Arquivos (Schema v1.9.0)
-Caminho oficial: `packaging/winget/manifests/f/Firezip/Firezip/<Version>/`
+Caminho oficial: `packaging/winget/manifests/z/ZipBuddy/ZipBuddy/<Version>/`
 
-1. **`Firezip.Firezip.yaml` (Version Manifest):**
-   - `PackageIdentifier`: `Firezip.Firezip`
+1. **`ZipBuddy.ZipBuddy.yaml` (Version Manifest):**
+   - `PackageIdentifier`: `ZipBuddy.ZipBuddy`
    - `PackageVersion`: `<Version>` (ex: `1.0.0` ou `1.0.1`)
    - `DefaultLocale`: `en-US`
    - `ManifestType`: `version`
    - `ManifestVersion`: `1.9.0`
-2. **`Firezip.Firezip.installer.yaml` (Installer Manifest):**
+2. **`ZipBuddy.ZipBuddy.installer.yaml` (Installer Manifest):**
    - `InstallerType`: `inno`
    - `Scope`: `machine`
    - `InstallModes`: `[ interactive, silent, silentWithProgress ]`
@@ -1149,15 +1149,15 @@ Caminho oficial: `packaging/winget/manifests/f/Firezip/Firezip/<Version>/`
    - `Architecture`: `x64`
    - `InstallerUrl`: URL HTTPS direta e versionada no GitHub Releases
    - `InstallerSha256`: Hash SHA-256 maiúsculo de 64 caracteres gerado do arquivo final
-3. **`Firezip.Firezip.locale.en-US.yaml` (Default Locale Manifest):**
-   - Metadados completos em inglês: `Publisher`, `PackageName`, `License` (`MIT`), `LicenseUrl` (apontando para URL pública com retorno 200 OK), `ShortDescription`, `Description`, `Moniker` (`firezip`), `Tags` e `ReleaseNotesUrl`.
-4. **`Firezip.Firezip.locale.pt-BR.yaml` (Locale Manifest pt-BR):**
+3. **`ZipBuddy.ZipBuddy.locale.en-US.yaml` (Default Locale Manifest):**
+   - Metadados completos em inglês: `Publisher`, `PackageName`, `License` (`MIT`), `LicenseUrl` (apontando para URL pública com retorno 200 OK), `ShortDescription`, `Description`, `Moniker` (`zip-buddy`), `Tags` e `ReleaseNotesUrl`.
+4. **`ZipBuddy.ZipBuddy.locale.pt-BR.yaml` (Locale Manifest pt-BR):**
    - Metadados completos localizados em Português do Brasil.
 
 ### 2. Validação Local de Schema
 * Executado via comando oficial:
   ```powershell
-  winget validate --manifest packaging/winget/manifests/f/Firezip/Firezip/<Version>/
+  winget validate --manifest packaging/winget/manifests/z/ZipBuddy/ZipBuddy/<Version>/
   ```
 * *Resultado:* **Êxito na validação do manifesto (100% de conformidade com os schemas do WinGet).**
 
@@ -1170,21 +1170,21 @@ Caminho oficial: `packaging/winget/manifests/f/Firezip/Firezip/<Version>/`
 
 ### 1. Regras de Estrutura do Pull Request
 * **Isolamento Estrito:** O PR contém **exclusivamente** os 4 arquivos YAML do manifesto no caminho:
-  `manifests/f/Firezip/Firezip/<Version>/`
+  `manifests/z/ZipBuddy/ZipBuddy/<Version>/`
 * **Zero Arquivos Espúrios:** Nenhuma alteração em código C#, scripts, README ou outros diretórios é incluída no mesmo PR.
 * **Casing e Nomenclatura:**
-  - Diretórios: `manifests/f/Firezip/Firezip/<Version>/`
-  - Arquivos: `Firezip.Firezip.*.yaml` (idêntico ao `PackageIdentifier`).
+  - Diretórios: `manifests/z/ZipBuddy/ZipBuddy/<Version>/`
+  - Arquivos: `ZipBuddy.ZipBuddy.*.yaml` (idêntico ao `PackageIdentifier`).
 * **Uma Única Versão:** Um único pacote e uma única versão por PR de submissão.
 
 ### 2. Comandos de Homologação Pré-PR
 Executar obrigatoriamente antes do push do PR:
 ```powershell
 # 1. Validação estática de schema
-winget validate --manifest packaging/winget/manifests/f/Firezip/Firezip/<Version>/
+winget validate --manifest packaging/winget/manifests/z/ZipBuddy/ZipBuddy/<Version>/
 
 # 2. Teste de instalação local direta via manifesto
-winget install --manifest packaging/winget/manifests/f/Firezip/Firezip/<Version>/
+winget install --manifest packaging/winget/manifests/z/ZipBuddy/ZipBuddy/<Version>/
 ```
 
 ---
@@ -1200,12 +1200,12 @@ winget install --manifest packaging/winget/manifests/f/Firezip/Firezip/<Version>
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Manifesto** | `Manifest-Validation-Error` / `Manifest-Installer-Validation-Error` | Campo obrigatório ausente, tipo incorreto ou erro de indentação YAML | Nenhuma alteração de código necessária | Corrigir sintaxe YAML ou valores dos campos | Não | Não |
 | **Manifesto** | `Manifest-Version-Deprecated` | Schema version desatualizada (ex: < 1.6.0) | Nenhuma alteração | Atualizar `$schema` e `ManifestVersion` para versão aceita (ex: `1.9.0`) | Não | Não |
-| **Manifesto** | `Manifest-Path-Error` | Arquivos fora do caminho `manifests/f/Firezip/Firezip/<version>/` | Nenhuma alteração | Mover arquivos para a árvore correta | Não | Não |
+| **Manifesto** | `Manifest-Path-Error` | Arquivos fora do caminho `manifests/z/ZipBuddy/ZipBuddy/<version>/` | Nenhuma alteração | Mover arquivos para a árvore correta | Não | Não |
 | **Instalador** | `Error-Hash-Mismatch` | Checksum SHA-256 no YAML difere do binário baixado pela URL | Nenhuma alteração no código | Recalcular `Get-FileHash` e atualizar `InstallerSha256` | Não | Sim (se o arquivo na release mudou) |
 | **Instalador** | `Error-Installer-Availability` | Instalador inacessível no momento do teste do bot | Nenhuma alteração | Verificar URL em `InstallerUrl` | Não | Sim (estabilidade do GitHub Releases) |
 | **Instalador** | `Binary-Validation-Error` | Executável corrompido ou arquitetura incompatível | Verificar arquitetura x64 no build do Inno Setup | Confirmar `Architecture: x64` | Sim | Não |
 | **URL** | `URL-Validation-Error` / `Validation-HTTP-Error` | URL retorna 404, 403, 500 ou quebra de link (ex: `LICENSE` inexistente) | Criar o arquivo no repositório (ex: `LICENSE` na branch `main`) | Atualizar URL se o link estiver apontando para caminho errado | Não | Sim (commit e push para o repositório público) |
-| **URL** | `Validation-Domain` / `Validation-Unapproved-URL` | URL de download fora do domínio do publisher | Hospedar instalador apenas no repositório oficial (`github.com/drodrigues55/firezip`) | Atualizar `InstallerUrl` | Não | Sim |
+| **URL** | `Validation-Domain` / `Validation-Unapproved-URL` | URL de download fora do domínio do publisher | Hospedar instalador apenas no repositório oficial (`github.com/drodrigues55/zip-buddy`) | Atualizar `InstallerUrl` | Não | Sim |
 | **URL** | `Validation-Indirect-URL` | URL passa por encurtador ou landing page intermediária | Nenhuma alteração | Garantir link direto `.exe` para o asset da release | Não | Sim |
 | **Instalação** | `Validation-Unattended-Failed` | Instalador abre janela, trava ou exige clique durante `/VERYSILENT` | Inserir `skipifsilent` nas ações pós-instalação do Inno Setup | Confirmar `InstallerSwitches.Silent` | Sim | Não |
 | **Instalação** | `Validation-Executable-Error` | Executável não inicia após a instalação no sandbox | Verificar dependências nativas e runtime empacotado | Confirmar `ProductCode` e caminhos de atalhos | Sim | Não |
@@ -1224,24 +1224,24 @@ winget install --manifest packaging/winget/manifests/f/Firezip/Firezip/<Version>
 > **Objetivo:** Auditoria final completa e fechamento de ciclo após aprovação do pacote no catálogo oficial do WinGet.
 
 ### Checklist de Homologação Pós-Publicação
-* `[Pendente de validação Microsoft]` **Disponibilidade no Feed Oficial:** Verificar indexação do pacote no repositório central (`winget search Firezip`).
+* `[Pendente de validação Microsoft]` **Disponibilidade no Feed Oficial:** Verificar indexação do pacote no repositório central (`winget search Zip Buddy`).
 * `[Pendente]` **Instalação Limpa via WinGet:**
   ```powershell
-  winget install Firezip.Firezip
+  winget install ZipBuddy.ZipBuddy
   ```
   Verificar que o download, verificação de hash SHA-256 e instalação silenciosa ocorrem sem intervenção e retornam código 0.
 * `[Pendente]` **Inicialização e Funcionamento:** Executar o aplicativo após instalação via WinGet e testar:
   - Criação e extração de arquivos ZIP e 7Z.
   - Ação de duplo clique configurada (Bandizip-style).
   - Preservação da janela de progresso com estatísticas de compressão.
-* `[Pendente]` **Auditoria de Isolamento de Rede Pós-Instalação:** Confirmar via monitoramento de conexões que `Firezip.UI.exe` não realiza chamadas de rede.
+* `[Pendente]` **Auditoria de Isolamento de Rede Pós-Instalação:** Confirmar via monitoramento de conexões que `ZipBuddy.UI.exe` não realiza chamadas de rede.
 * `[Pendente]` **Auditoria de Desinstalação via WinGet:**
   ```powershell
-  winget uninstall Firezip.Firezip
+  winget uninstall ZipBuddy.ZipBuddy
   ```
-  Verificar que o pacote é removido de forma silenciosa, atalhos são excluídos e configurações em `%APPDATA%\Firezip` permanecem seguras.
+  Verificar que o pacote é removido de forma silenciosa, atalhos são excluídos e configurações em `%APPDATA%\Zip Buddy` permanecem seguras.
 * `[Pendente]` **Consistência Ponta a Ponta:** Garantir correspondência 100% idêntica entre:
-  - Versão do assembly compilado (`Firezip.UI.exe`).
+  - Versão do assembly compilado (`ZipBuddy.UI.exe`).
   - Versão exibida no diálogo nativo *Sobre* e na UI.
   - Versão da GitHub Release e arquivos anexados.
   - Versão publicada no catálogo oficial do WinGet.

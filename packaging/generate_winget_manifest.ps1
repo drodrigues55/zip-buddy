@@ -1,14 +1,14 @@
-# Firezip Winget Manifest Generator Script
+# Zip Buddy Winget Manifest Generator Script
 Param(
     [string]$Version = "1.0.11",
     [string]$InstallerPath = "",
-    [string]$ReleaseBaseUrl = "https://github.com/drodrigues55/firezip/releases/download/v"
+    [string]$ReleaseBaseUrl = "https://github.com/drodrigues55/zip-buddy/releases/download/v"
 )
 
 $ErrorActionPreference = "Stop"
 
 if (-not $InstallerPath) {
-    $InstallerPath = Join-Path $PSScriptRoot "..\dist\FirezipSetup-x64-v$Version.exe"
+    $InstallerPath = Join-Path $PSScriptRoot "..\dist\ZipBuddySetup-x64-v$Version.exe"
 }
 
 if (-not (Test-Path $InstallerPath)) {
@@ -19,18 +19,18 @@ Write-Host "[*] Calculating SHA-256 for: $InstallerPath" -ForegroundColor Cyan
 $sha256 = (Get-FileHash -Path $InstallerPath -Algorithm SHA256).Hash.ToUpperInvariant()
 Write-Host "[+] SHA-256: $sha256" -ForegroundColor Green
 
-$manifestDir = Join-Path $PSScriptRoot "winget\manifests\f\Firezip\Firezip\$Version"
+$manifestDir = Join-Path $PSScriptRoot "winget\manifests\f\Zip Buddy\Zip Buddy\$Version"
 if (-not (Test-Path $manifestDir)) {
     New-Item -ItemType Directory -Path $manifestDir -Force | Out-Null
 }
 
-$installerUrl = "$ReleaseBaseUrl$Version/FirezipSetup-x64-v$Version.exe"
+$installerUrl = "$ReleaseBaseUrl$Version/ZipBuddySetup-x64-v$Version.exe"
 
 # 1. Version Manifest
 $versionYaml = @"
 # yaml-language-server: `$schema=https://aka.ms/winget-manifest.version.1.9.0.schema.json
 
-PackageIdentifier: Firezip.Firezip
+PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
 DefaultLocale: en-US
 ManifestType: version
@@ -41,7 +41,7 @@ ManifestVersion: 1.9.0
 $installerYaml = @"
 # yaml-language-server: `$schema=https://aka.ms/winget-manifest.installer.1.9.0.schema.json
 
-PackageIdentifier: Firezip.Firezip
+PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
 InstallerType: inno
 Scope: machine
@@ -73,27 +73,27 @@ ManifestVersion: 1.9.0
 $localeYaml = @"
 # yaml-language-server: `$schema=https://aka.ms/winget-manifest.defaultLocale.1.9.0.schema.json
 
-PackageIdentifier: Firezip.Firezip
+PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
 PackageLocale: en-US
-Publisher: Firezip Contributors
-PublisherUrl: https://github.com/drodrigues55/firezip
-PublisherSupportUrl: https://github.com/drodrigues55/firezip/issues
-PackageName: Firezip
-PackageUrl: https://github.com/drodrigues55/firezip
+Publisher: Zip Buddy Contributors
+PublisherUrl: https://github.com/drodrigues55/zip-buddy
+PublisherSupportUrl: https://github.com/drodrigues55/zip-buddy/issues
+PackageName: Zip Buddy
+PackageUrl: https://github.com/drodrigues55/zip-buddy
 License: MIT
-LicenseUrl: https://github.com/drodrigues55/firezip/blob/main/LICENSE
-Copyright: Copyright (c) 2026 Firezip Contributors
+LicenseUrl: https://github.com/drodrigues55/zip-buddy/blob/main/LICENSE
+Copyright: Copyright (c) 2026 Zip Buddy Contributors
 ShortDescription: 100% free, fast, and secure native Windows archive manager built with .NET 10 and WinUI 3.
 Description: |-
-  Firezip is a modern, high-performance Windows desktop archive manager inspired by the workflows of Bandizip and 7-Zip.
+  Zip Buddy is a modern, high-performance Windows desktop archive manager inspired by the workflows of Bandizip and 7-Zip.
   Features:
   - 100% free, zero ads, zero telemetry, no subscriptions.
   - Native Windows 10/11 WinUI 3 interface with dark/light theme support.
   - Streaming ZIP, 7Z, TAR, GZ, and RAR archive reading and creation.
   - Built-in Zip Slip, directory traversal, and decompression bomb protection.
   - Explorer drag-and-drop integration.
-Moniker: firezip
+Moniker: zip-buddy
 Tags:
   - archive
   - archiver
@@ -103,15 +103,15 @@ Tags:
   - 7zip
   - rar
   - extractor
-ReleaseNotesUrl: https://github.com/drodrigues55/firezip/releases/tag/v$Version
+ReleaseNotesUrl: https://github.com/drodrigues55/zip-buddy/releases/tag/v$Version
 ManifestType: defaultLocale
 ManifestVersion: 1.9.0
 "@
 
 # Write files with UTF-8 without BOM or standard UTF-8
-[System.IO.File]::WriteAllText((Join-Path $manifestDir "Firezip.Firezip.yaml"), $versionYaml, [System.Text.Encoding]::UTF8)
-[System.IO.File]::WriteAllText((Join-Path $manifestDir "Firezip.Firezip.installer.yaml"), $installerYaml, [System.Text.Encoding]::UTF8)
-[System.IO.File]::WriteAllText((Join-Path $manifestDir "Firezip.Firezip.locale.en-US.yaml"), $localeYaml, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $manifestDir "ZipBuddy.ZipBuddy.yaml"), $versionYaml, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $manifestDir "ZipBuddy.ZipBuddy.installer.yaml"), $installerYaml, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $manifestDir "ZipBuddy.ZipBuddy.locale.en-US.yaml"), $localeYaml, [System.Text.Encoding]::UTF8)
 
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host "[+] Winget manifests created successfully in:" -ForegroundColor Green
