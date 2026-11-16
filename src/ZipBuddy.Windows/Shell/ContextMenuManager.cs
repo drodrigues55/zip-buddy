@@ -1,16 +1,28 @@
 using Microsoft.Win32;
+using ZipBuddy.Core.Services;
 
 namespace ZipBuddy.Windows.Shell;
 
 /// <summary>
 /// Registers Windows Explorer context menu items under HKCU (no admin rights needed).
-/// Supports both flat verbs and grouped cascading submenus, with native brand icon integration.
+/// Supports flat verbs and rich grouped cascading submenus (7-Zip / WinRAR style),
+/// with native brand icon integration.
 /// </summary>
 public static class ContextMenuManager
 {
     private static readonly string[] ArchiveExtensions =
     [
         ".zip", ".zipx", ".jar", ".apk", ".7z", ".rar", ".tar", ".gz", ".bz2", ".xz", ".tgz", ".tbz2", ".txz"
+    ];
+
+    private static readonly string[] AllFlatVerbs =
+    [
+        "Zip Buddy.Open",
+        "Zip Buddy.ExtractTo",
+        "Zip Buddy.ExtractHere",
+        "Zip Buddy.ExtractToFolder",
+        "Zip Buddy.CompressZip",
+        "Zip Buddy.Compress7z"
     ];
 
     public static bool RegisterContextMenu(
@@ -21,7 +33,8 @@ public static class ContextMenuManager
         bool enableExtractTo = true,
         bool enableCompressToZip = true,
         bool enableCompressTo7z = true,
-        bool useCascadingMenu = false)
+        bool useCascadingMenu = ContextMenuDefinitions.DefaultUseCascadingMenu,
+        bool isPortuguese = true)
     {
         if (string.IsNullOrWhiteSpace(executablePath) || !File.Exists(executablePath))
             return false;
@@ -30,121 +43,32 @@ public static class ContextMenuManager
         {
             var iconVal = $"\"{executablePath}\",0";
 
-            // Register archive verbs under SystemFileAssociations for each archive extension
+            var archiveVerbs = ContextMenuDefinitions.BuildArchiveVerbs(
+                enableOpenWith,
+                enableExtractHere,
+                enableExtractToFolder,
+                enableExtractTo,
+                isPortuguese,
+                enableCompressToZip,
+                enableCompressTo7z);
+
+            var fileVerbs = ContextMenuDefinitions.BuildFileVerbs(
+                enableCompressToZip,
+                enableCompressTo7z,
+                isPortuguese);
+
+            // 1. Archive verbs under SystemFileAssociations for each archive extension
             foreach (var ext in ArchiveExtensions)
             {
                 var baseKey = $@"Software\Classes\SystemFileAssociations\{ext}\shell";
-
-                if (useCascadingMenu)
-                {
-                    // Clean up flat verbs first
-                    RemoveVerb(baseKey, "Zip Buddy.Open");
-                    RemoveVerb(baseKey, "Zip Buddy.ExtractHere");
-                    RemoveVerb(baseKey, "Zip Buddy.ExtractToFolder");
-                    RemoveVerb(baseKey, "Zip Buddy.ExtractTo");
-
-                    // Check if any archive verb is active
-                    if (enableOpenWith || enableExtractHere || enableExtractToFolder || enableExtractTo)
-                    {
-                        SetCascadingGroup(baseKey, "Zip Buddy", "Zip Buddy", iconVal);
-                        var cascadeShell = $@"{baseKey}\Zip Buddy\shell";
-
-                        if (enableOpenWith)
-                            SetVerb(cascadeShell, "Open", "Open", $"\"{executablePath}\" \"%1\"", iconVal);
-                        else
-                            RemoveVerb(cascadeShell, "Open");
-
-                        if (enableExtractHere)
-                            SetVerb(cascadeShell, "ExtractHere", "Extract Here", $"\"{executablePath}\" --extract-here \"%1\"", iconVal);
-                        else
-                            RemoveVerb(cascadeShell, "ExtractHere");
-
-                        if (enableExtractToFolder)
-                            SetVerb(cascadeShell, "ExtractToFolder", "Extract to Folder", $"\"{executablePath}\" --extract-to-folder \"%1\"", iconVal);
-                        else
-                            RemoveVerb(cascadeShell, "ExtractToFolder");
-
-                        if (enableExtractTo)
-                            SetVerb(cascadeShell, "ExtractTo", "Extract to...", $"\"{executablePath}\" --extract-to \"%1\"", iconVal);
-                        else
-                            RemoveVerb(cascadeShell, "ExtractTo");
-                    }
-                    else
-                    {
-                        RemoveVerb(baseKey, "Zip Buddy");
-                    }
-                }
-                else
-                {
-                    // Remove cascading menu if previously registered
-                    RemoveVerb(baseKey, "Zip Buddy");
-
-                    // Flat verbs with clean labels and native icon
-                    if (enableOpenWith)
-                        SetVerb(baseKey, "Zip Buddy.Open", "Open with Zip Buddy", $"\"{executablePath}\" \"%1\"", iconVal);
-                    else
-                        RemoveVerb(baseKey, "Zip Buddy.Open");
-
-                    if (enableExtractHere)
-                        SetVerb(baseKey, "Zip Buddy.ExtractHere", "Extract Here", $"\"{executablePath}\" --extract-here \"%1\"", iconVal);
-                    else
-                        RemoveVerb(baseKey, "Zip Buddy.ExtractHere");
-
-                    if (enableExtractToFolder)
-                        SetVerb(baseKey, "Zip Buddy.ExtractToFolder", "Extract to Folder", $"\"{executablePath}\" --extract-to-folder \"%1\"", iconVal);
-                    else
-                        RemoveVerb(baseKey, "Zip Buddy.ExtractToFolder");
-
-                    if (enableExtractTo)
-                        SetVerb(baseKey, "Zip Buddy.ExtractTo", "Extract to...", $"\"{executablePath}\" --extract-to \"%1\"", iconVal);
-                    else
-                        RemoveVerb(baseKey, "Zip Buddy.ExtractTo");
-                }
+                ApplyVerbs(baseKey, archiveVerbs, executablePath, iconVal, useCascadingMenu);
             }
 
-            // Register compression verbs for all files (*) and folders (Directory)
+            // 2. Compression verbs for all files (*) and folders (Directory)
             string[] targetKeys = [@"Software\Classes\*\shell", @"Software\Classes\Directory\shell"];
             foreach (var parentKey in targetKeys)
             {
-                if (useCascadingMenu)
-                {
-                    RemoveVerb(parentKey, "Zip Buddy.CompressZip");
-                    RemoveVerb(parentKey, "Zip Buddy.Compress7z");
-
-                    if (enableCompressToZip || enableCompressTo7z)
-                    {
-                        SetCascadingGroup(parentKey, "Zip Buddy", "Zip Buddy", iconVal);
-                        var cascadeShell = $@"{parentKey}\Zip Buddy\shell";
-
-                        if (enableCompressToZip)
-                            SetVerb(cascadeShell, "CompressZip", "Compress to ZIP", $"\"{executablePath}\" --compress-zip \"%1\"", iconVal);
-                        else
-                            RemoveVerb(cascadeShell, "CompressZip");
-
-                        if (enableCompressTo7z)
-                            SetVerb(cascadeShell, "Compress7z", "Compress to 7Z", $"\"{executablePath}\" --compress-7z \"%1\"", iconVal);
-                        else
-                            RemoveVerb(cascadeShell, "Compress7z");
-                    }
-                    else
-                    {
-                        RemoveVerb(parentKey, "Zip Buddy");
-                    }
-                }
-                else
-                {
-                    RemoveVerb(parentKey, "Zip Buddy");
-
-                    if (enableCompressToZip)
-                        SetVerb(parentKey, "Zip Buddy.CompressZip", "Compress to ZIP", $"\"{executablePath}\" --compress-zip \"%1\"", iconVal);
-                    else
-                        RemoveVerb(parentKey, "Zip Buddy.CompressZip");
-
-                    if (enableCompressTo7z)
-                        SetVerb(parentKey, "Zip Buddy.Compress7z", "Compress to 7Z", $"\"{executablePath}\" --compress-7z \"%1\"", iconVal);
-                    else
-                        RemoveVerb(parentKey, "Zip Buddy.Compress7z");
-                }
+                ApplyVerbs(parentKey, fileVerbs, executablePath, iconVal, useCascadingMenu);
             }
 
             return true;
@@ -155,6 +79,48 @@ public static class ContextMenuManager
         }
     }
 
+    private static void ApplyVerbs(
+        string baseKey,
+        IReadOnlyList<ContextMenuVerb> verbs,
+        string executablePath,
+        string iconVal,
+        bool useCascadingMenu)
+    {
+        if (useCascadingMenu)
+        {
+            // Rebuild the group from scratch so disabled verbs never leave stale numbered keys.
+            foreach (var flatKey in AllFlatVerbs)
+                RemoveVerb(baseKey, flatKey);
+            RemoveVerb(baseKey, ContextMenuDefinitions.GroupName);
+
+            if (verbs.Count == 0)
+                return;
+
+            SetCascadingGroup(baseKey, ContextMenuDefinitions.GroupName, ContextMenuDefinitions.GroupName, iconVal);
+            var cascadeShell = $@"{baseKey}\{ContextMenuDefinitions.GroupName}\shell";
+
+            foreach (var verb in verbs)
+                SetVerb(cascadeShell, verb.Key, verb.Label, $"\"{executablePath}\" {verb.Arguments}", iconVal);
+        }
+        else
+        {
+            RemoveVerb(baseKey, ContextMenuDefinitions.GroupName);
+
+            var enabledFlatKeys = verbs.Where(v => v.FlatKey is not null)
+                                       .Select(v => v.FlatKey!)
+                                       .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var flatKey in AllFlatVerbs)
+            {
+                if (!enabledFlatKeys.Contains(flatKey))
+                    RemoveVerb(baseKey, flatKey);
+            }
+
+            foreach (var verb in verbs.Where(v => v.FlatKey is not null))
+                SetVerb(baseKey, verb.FlatKey!, verb.Label, $"\"{executablePath}\" {verb.Arguments}", iconVal);
+        }
+    }
+
     public static bool UnregisterContextMenu()
     {
         try
@@ -162,19 +128,17 @@ public static class ContextMenuManager
             foreach (var ext in ArchiveExtensions)
             {
                 var baseKey = $@"Software\Classes\SystemFileAssociations\{ext}\shell";
-                RemoveVerb(baseKey, "Zip Buddy.Open");
-                RemoveVerb(baseKey, "Zip Buddy.ExtractHere");
-                RemoveVerb(baseKey, "Zip Buddy.ExtractToFolder");
-                RemoveVerb(baseKey, "Zip Buddy.ExtractTo");
-                RemoveVerb(baseKey, "Zip Buddy");
+                foreach (var flatKey in AllFlatVerbs)
+                    RemoveVerb(baseKey, flatKey);
+                RemoveVerb(baseKey, ContextMenuDefinitions.GroupName);
             }
 
             string[] targetKeys = [@"Software\Classes\*\shell", @"Software\Classes\Directory\shell"];
             foreach (var parentKey in targetKeys)
             {
-                RemoveVerb(parentKey, "Zip Buddy.CompressZip");
-                RemoveVerb(parentKey, "Zip Buddy.Compress7z");
-                RemoveVerb(parentKey, "Zip Buddy");
+                foreach (var flatKey in AllFlatVerbs)
+                    RemoveVerb(parentKey, flatKey);
+                RemoveVerb(parentKey, ContextMenuDefinitions.GroupName);
             }
 
             return true;
@@ -190,6 +154,7 @@ public static class ContextMenuManager
         try
         {
             using var key = Registry.CurrentUser.CreateSubKey($@"{parentKeyPath}\{groupKey}");
+            key.SetValue(string.Empty, groupTitle);
             key.SetValue("MUIVerb", groupTitle);
             key.SetValue("SubCommands", string.Empty);
             if (!string.IsNullOrEmpty(iconPath))
@@ -207,6 +172,7 @@ public static class ContextMenuManager
         {
             using var verb = Registry.CurrentUser.CreateSubKey($@"{parentKeyPath}\{verbKey}");
             verb.SetValue(string.Empty, menuText);
+            verb.SetValue("MUIVerb", menuText);
             if (!string.IsNullOrEmpty(iconPath))
                 verb.SetValue("Icon", iconPath);
 

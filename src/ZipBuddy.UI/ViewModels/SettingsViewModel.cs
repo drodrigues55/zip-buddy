@@ -252,6 +252,7 @@ public partial class SettingsViewModel : ObservableObject
             bool contextMenuOk;
             if (EnableContextMenu && !string.IsNullOrEmpty(exePath))
             {
+                bool isPt = _localizationService?.CurrentCulture?.StartsWith("pt", StringComparison.OrdinalIgnoreCase) ?? true;
                 contextMenuOk = ContextMenuManager.RegisterContextMenu(
                     exePath,
                     enableOpenWith: EnableOpenWith,
@@ -260,7 +261,8 @@ public partial class SettingsViewModel : ObservableObject
                     enableExtractTo: EnableExtractTo,
                     enableCompressToZip: EnableCompressToZip,
                     enableCompressTo7z: EnableCompressTo7z,
-                    useCascadingMenu: UseCascadingContextMenu);
+                    useCascadingMenu: UseCascadingContextMenu,
+                    isPortuguese: isPt);
             }
             else
             {

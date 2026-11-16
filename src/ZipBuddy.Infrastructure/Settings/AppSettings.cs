@@ -1,4 +1,5 @@
 using ZipBuddy.Core.Models;
+using ZipBuddy.Core.Services;
 
 namespace ZipBuddy.Infrastructure.Settings;
 
@@ -18,7 +19,7 @@ public class AppSettings
     public string CustomTempDirectory { get; set; } = string.Empty;
     public int MaxExtractionThreads { get; set; } = Math.Clamp(Environment.ProcessorCount, 1, 64);
     public bool EnableContextMenu { get; set; } = true;
-    public bool UseCascadingContextMenu { get; set; } = false;
+    public bool UseCascadingContextMenu { get; set; } = ContextMenuDefinitions.DefaultUseCascadingMenu;
     public bool AutoCloseTaskProgressWindow { get; set; } = true;
     public bool NotifyOnTaskCompletion { get; set; } = true;
     public List<string> EnabledContextMenuCommands { get; set; } =
