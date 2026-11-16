@@ -77,8 +77,15 @@ foreach ($name in @("ZipBuddySetup-x64-v$Version.exe", "ZipBuddy-v$Version-windo
 }
 Write-Host "[OK] $($assets.Count) assets e hashes validados; notas de release conferem." -ForegroundColor Green
 
-# 3. gh CLI
+# 3. gh CLI (accept the default install path even when PATH has not been refreshed yet)
 $gh = Get-Command gh -ErrorAction SilentlyContinue
+if (-not $gh) {
+    $ghFallback = "${env:ProgramFiles}\GitHub CLI\gh.exe"
+    if (Test-Path $ghFallback) {
+        Set-Alias -Name gh -Value $ghFallback -Scope Script
+        $gh = Get-Command gh -ErrorAction SilentlyContinue
+    }
+}
 if (-not $gh) {
     Write-Host "[AVISO] GitHub CLI nao encontrado. Instale com:" -ForegroundColor Yellow
     Write-Host "        winget install --id GitHub.cli" -ForegroundColor Yellow
