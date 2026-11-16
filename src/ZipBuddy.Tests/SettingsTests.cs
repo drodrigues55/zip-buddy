@@ -157,7 +157,7 @@ public class SettingsTests
             Assert.Equal(ArchiveFormat.Zip, service.DefaultArchiveFormat);
             Assert.Equal(CompressionLevel.Normal, service.DefaultCompressionLevel);
             Assert.True(service.EnableContextMenu);
-            Assert.False(service.UseCascadingContextMenu);
+            Assert.True(service.UseCascadingContextMenu);
             Assert.NotEmpty(service.AssociatedExtensions);
             Assert.NotEmpty(service.EnabledContextMenuCommands);
         }
@@ -1157,7 +1157,7 @@ public class SettingsTests
             await service.LoadAsync();
 
             Assert.True(service.EnableContextMenu);
-            Assert.False(service.UseCascadingContextMenu);
+            Assert.True(service.UseCascadingContextMenu);
             Assert.Contains("OpenWith", service.EnabledContextMenuCommands);
             Assert.Contains("ExtractHere", service.EnabledContextMenuCommands);
             Assert.Contains("ExtractToFolder", service.EnabledContextMenuCommands);
