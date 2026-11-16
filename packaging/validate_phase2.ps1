@@ -8,7 +8,8 @@
     3. Contratos de código (verbos CLI e chaves de localização novas)
     4. Publicação opcional do portable (-Publish) e hashes SHA256
     5. Snapshot somente-leitura das chaves do menu de contexto no HKCU
-    6. Checklist manual M01-M11 (-Interactive), com relatório Markdown + JSON
+    6. Instalação/desinstalação silenciosa: registra 4 chaves HKCU e limpa todas (gate A08)
+    7. Checklist manual M01-M11 (-Interactive), com relatório Markdown + JSON
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File packaging\validate_phase2.ps1
@@ -260,7 +261,71 @@ foreach ($path in $registryPaths) {
 Add-Check "A07" "Registro" "INFO" "Snapshot de $($registryPaths.Count) chaves HKCU registrado no relatorio"
 
 # -------------------------------------------------------------------------------
-# A08 - Checklist manual interativo
+# A08 - Instalacao/desinstalacao silenciosa + registro do menu (M11 automatizado)
+# -------------------------------------------------------------------------------
+$silentInstaller = Join-Path $projectRoot "dist\ZipBuddySetup-x64-v$version.exe"
+$menuGroupKeys = @(
+    "Software\Classes\SystemFileAssociations\.zip\shell\Zip Buddy",
+    "Software\Classes\SystemFileAssociations\.7z\shell\Zip Buddy",
+    "Software\Classes\*\shell\Zip Buddy",
+    "Software\Classes\Directory\shell\Zip Buddy"
+)
+
+if (-not (Test-Path $silentInstaller)) {
+    Add-Check "A08" "Registro" "WARN" "Instalador nao encontrado em dist\\ para o teste de registro"
+}
+else {
+    $flowSandbox = Join-Path $env:TEMP ("ZipBuddy_Validate_" + [Guid]::NewGuid().ToString("N"))
+    try {
+        $t0 = Get-Date
+        $installArgs = "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /CURRENTUSER /DIR=""$flowSandbox"""
+        $installProc = Start-Process -FilePath $silentInstaller -ArgumentList $installArgs -Wait -PassThru
+        $t1 = Get-Date
+
+        if ($installProc.ExitCode -ne 0) {
+            throw "Instalacao silenciosa retornou exit code $($installProc.ExitCode)"
+        }
+
+        $present = @($menuGroupKeys | Where-Object { Test-Path "HKCU:\$_" }).Count
+        if ($present -ne $menuGroupKeys.Count) {
+            throw "Apos instalacao silenciosa so $present/$($menuGroupKeys.Count) chaves HKCU do menu estao presentes"
+        }
+
+        $uninstaller = Join-Path $flowSandbox "unins000.exe"
+        if (-not (Test-Path $uninstaller)) {
+            throw "unins000.exe nao encontrado no sandbox de instalacao"
+        }
+        $t2 = Get-Date
+        $uninstallProc = Start-Process -FilePath $uninstaller -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART" -Wait -PassThru
+        $t3 = Get-Date
+        Start-Sleep -Seconds 2
+
+        $remaining = @($menuGroupKeys | Where-Object { Test-Path "HKCU:\$_" }).Count
+        $exeGone = -not (Test-Path (Join-Path $flowSandbox "ZipBuddy.UI.exe"))
+
+        if ($uninstallProc.ExitCode -ne 0 -or $remaining -ne 0 -or -not $exeGone) {
+            throw "Desinstalacao incompleta: exit=$($uninstallProc.ExitCode), chaves restantes=$remaining, exe removido=$exeGone"
+        }
+
+        $installSeconds = [math]::Round(($t1 - $t0).TotalSeconds, 2)
+        $uninstallSeconds = [math]::Round(($t3 - $t2).TotalSeconds, 2)
+        Add-Check "A08" "Registro" "PASS" "Silencioso registra $($menuGroupKeys.Count)/$($menuGroupKeys.Count) chaves e remove todas na desinstalacao (instalar ${installSeconds}s / desinstalar ${uninstallSeconds}s)"
+    }
+    catch {
+        Add-Check "A08" "Registro" "FAIL" $_
+    }
+    finally {
+        foreach ($key in $menuGroupKeys) {
+            try { Remove-Item -Path "HKCU:\$key" -Recurse -Force -ErrorAction SilentlyContinue } catch { }
+        }
+        if (Test-Path $flowSandbox) {
+            try { Remove-Item -Path $flowSandbox -Recurse -Force -ErrorAction SilentlyContinue } catch { }
+        }
+    }
+}
+
+# -------------------------------------------------------------------------------
+# A09 - Checklist manual interativo
 # -------------------------------------------------------------------------------
 $manualItems = @(
     @{ Id = "M01"; Title = "Menu em cascata em .zip/.7z (12 itens, idioma, icone)" }

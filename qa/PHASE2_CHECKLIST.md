@@ -136,7 +136,7 @@ Resultado: ☐ Passou ☐ Falhou ☐ N/A — Evidência: ______________________
 - [ ] Instalação silenciosa: `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-` — deve registrar o menu via `skipifnotsilent` (checar 4/4 chaves HKCU; `packaging/measure_install_flow.ps1` já valida)
 - [ ] Wizard interativo: última página mostra `★ Adicionar Zip Buddy ao menu de contexto do Windows (RECOMENDADO)` marcado, seguido de `Abrir Configurações de aplicativos padrão` desmarcado
 - [ ] Desinstalação remove chaves `HKCU\Software\Classes` e arquivos
-- [ ] `[UninstallRun]` executa `--unregister-context-menu` e remove as 4 chaves HKCU do menu (simular criando `Software\Classes\SystemFileAssociations\.zip\shell\Zip Buddy`, `*\shell\Zip Buddy`, `Directory\shell\Zip Buddy` antes de desinstalar). Automatizado em `packaging/measure_install_flow.ps1`
+- [ ] `[UninstallRun]` executa `--unregister-context-menu` e remove as 4 chaves HKCU do menu (simular criando `Software\Classes\SystemFileAssociations\.zip\shell\Zip Buddy`, `*\shell\Zip Buddy`, `Directory\shell\Zip Buddy` antes de desinstalar). Automatizado no **gate A08** do `packaging/validate_phase2.ps1` e em `packaging/measure_install_flow.ps1`
 - [ ] `packaging/verify_release_candidate.ps1 -Version <versão>` passa (instalador, hash, winget)
 
 Resultado: ☐ Passou ☐ Falhou ☐ N/A — Evidência: ______________________

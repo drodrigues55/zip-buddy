@@ -87,7 +87,7 @@ powershell -ExecutionPolicy Bypass -File packaging\validate_phase2.ps1 -Publish 
 - Detalhes passo a passo: `qa/PHASE2_CHECKLIST.md`
 - Saída: `qa/results/<timestamp>/report.md` + `results.json` (ignoreado pelo Git)
 - O script existente `packaging/verify_release_candidate.ps1` continua responsável pelo instalador/winget (item M11).
-- **Execução final em 16/11/2026:** A02–A06 PASS (inclusive portable e SHA256), A06i/A07 INFO, M01–M11 PENDING (dependem de validação humana em Explorer/Outlook).
+- **Execução final em 16/11/2026:** A02–A06 PASS (inclusive instalador raiz e SHA256), A06i/A07 INFO, **A08 PASS** (instalação silenciosa cria 4/4 chaves HKCU e a desinstalação remove todas — ~5 s / ~2 s), M01–M11 PENDING (dependem de validação humana em Explorer/Outlook).
 Executar o binário **portable** e o **instalador** em Windows 11 x64 e Windows 10 19041+, nos dois idiomas do sistema.
 
 | ID | Cenário | Resultado esperado |
