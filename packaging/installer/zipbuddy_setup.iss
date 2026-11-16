@@ -3,7 +3,7 @@
 
 #define MyAppName "Zip Buddy"
 #define MyAppVersion "1.1.0"
-#define MyAppPublisher "Zip Buddy Contributors"
+#define MyAppPublisher "Zip Buddy Open Source Team"
 #define MyAppURL "https://github.com/drodrigues55/zip-buddy"
 #define MyAppExeName "ZipBuddy.UI.exe"
 
@@ -55,8 +55,6 @@ Name: "assoc_tar"; Description: "Associate with .tar, .gz, .bz2 files"; GroupDes
 [Files]
 Source: "..\..\ZipBuddy.UI.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\ZipBuddyUpdater.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\MyUnzip.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\..\MyUnzipUpdater.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"

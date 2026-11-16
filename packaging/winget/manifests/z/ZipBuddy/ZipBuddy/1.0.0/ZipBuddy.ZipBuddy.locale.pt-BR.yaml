@@ -10,7 +10,7 @@ PackageName: Zip Buddy
 PackageUrl: https://github.com/drodrigues55/zip-buddy
 License: MIT
 LicenseUrl: https://github.com/drodrigues55/zip-buddy/blob/main/LICENSE
-Copyright: Copyright (c) 2026 Zip Buddy Authors
+Copyright: Copyright (c) 2026 Zip Buddy Open Source Team
 ShortDescription: Gerenciador de arquivos compactados nativo para Windows, 100% gratuito, rápido e seguro.
 Description: |-
   O Zip Buddy é um gerenciador de compactação e descompactação moderno e veloz para Windows, inspirado no fluxo do Bandizip e 7-Zip.

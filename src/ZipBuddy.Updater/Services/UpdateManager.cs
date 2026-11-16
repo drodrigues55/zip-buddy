@@ -449,7 +449,7 @@ public class UpdateManager
 
     public static Process[] GetActiveAppProcesses()
     {
-        var names = new[] { "ZipBuddy.UI", "MyUnzip", "Zip Buddy" };
+        var names = new[] { "ZipBuddy.UI" };
         var list = new List<Process>();
         foreach (var name in names)
         {

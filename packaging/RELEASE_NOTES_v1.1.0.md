@@ -32,6 +32,7 @@ A versão **v1.1.0** adiciona ferramentas de verificação e novos fluxos de com
 - Validação de integridade usa a mesma implementação de CRC32 do calculador de hashes.
 - Desinstalação agora remove também as chaves do menu de contexto escritas pelo app no HKCU (`--unregister-context-menu` via `[UninstallRun]`). Em instalações per-machine, usuários diferentes precisam executar `ZipBuddy.UI.exe --unregister-context-menu` uma vez em sua própria sessão para limpar seu HKCU.
 - **Página final do instalador:** opção em destaque `★ Adicionar Zip Buddy ao menu de contexto do Windows (recomendado)`, marcada por padrão na primeira instalação, e `Abrir Configurações de aplicativos padrão` (o Windows não permite definir associações padrão por código). Instalações silenciosas/winget registram o menu automaticamente. O padrão do app agora é o **menu em cascata com 12 comandos**.
+- **Identidade unificada:** os aliases legados `MyUnzip.exe` / `MyUnzipUpdater.exe` foram removidos de todo o produto — executáveis, updater, instalador, manifestos e documentação agora usam exclusivamente **Zip Buddy / ZipBuddy** e o publicador **Zip Buddy Open Source Team**. Como efeito colateral, o instalador caiu de ~165 MB para **~84 MB**.
 
 ---
 
@@ -59,6 +60,6 @@ Gerada por `packaging/prepare_github_release.ps1 -Version 1.1.0` em 16/11/2026.
 
 | Arquivo | Tamanho | Checksum SHA-256 |
 | :--- | :--- | :--- |
-| `ZipBuddySetup-x64-v1.1.0.exe` | 165,39 MB | `98DB7EA7DE992D208E6A3881D140798FA8A1EB16DB25CA8A6E668A7CF9BE9E54` |
-| `ZipBuddy-v1.1.0-windows-x64-portable.zip` | 90,08 MB | `6D035DE12990E3E94A60C4B7D0BB1EBA3989EC9B365CCC3A565C55EB8590F719` |
-| `manifest.json` (assinado RSA-SHA256) | < 1 KB | `9FE2C35780AA03D313A4CE00158E201FAE1342F5519FF3C7C998395606BD8774` |
+| `ZipBuddySetup-x64-v1.1.0.exe` | 83,87 MB | `B4FB84F91CB2B5E3E881788C76088F5E392DA9AC55ABC22CF0C467EF3BDF9300` |
+| `ZipBuddy-v1.1.0-windows-x64-portable.zip` | 90,08 MB | `461494F65F902CB47F5B095BFDE4E57842051CB49279A541C7AA698F60951D9E` |
+| `manifest.json` (assinado RSA-SHA256) | < 1 KB | `28A39C10AE8813F182F09E8498909538A0A5E0AF3CBE085F04D53D03EE82CE5E` |

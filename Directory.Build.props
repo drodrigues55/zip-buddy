@@ -5,8 +5,8 @@
     <FileVersion>1.1.0.0</FileVersion>
     <Product>Zip Buddy</Product>
     <Company>Zip Buddy Open Source Team</Company>
-    <Authors>Zip Buddy Authors</Authors>
-    <Copyright>Copyright © 2026 Zip Buddy Authors</Copyright>
+    <Authors>Zip Buddy Open Source Team</Authors>
+    <Copyright>Copyright © 2026 Zip Buddy Open Source Team</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/drodrigues55/zip-buddy</PackageProjectUrl>
     <RepositoryUrl>https://github.com/drodrigues55/zip-buddy</RepositoryUrl>

@@ -188,7 +188,7 @@ public static class Program
 
         foreach (var dir in dirsToSearch)
         {
-            foreach (var exeName in new[] { "ZipBuddy.UI.exe", "MyUnzip.exe", "ZipBuddy.exe" })
+            foreach (var exeName in new[] { "ZipBuddy.UI.exe" })
             {
                 var candidate = Path.Combine(dir, exeName);
                 if (File.Exists(candidate))

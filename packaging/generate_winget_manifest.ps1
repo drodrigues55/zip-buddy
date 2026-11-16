@@ -76,14 +76,14 @@ $localeYaml = @"
 PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
 PackageLocale: en-US
-Publisher: Zip Buddy Contributors
+Publisher: Zip Buddy Open Source Team
 PublisherUrl: https://github.com/drodrigues55/zip-buddy
 PublisherSupportUrl: https://github.com/drodrigues55/zip-buddy/issues
 PackageName: Zip Buddy
 PackageUrl: https://github.com/drodrigues55/zip-buddy
 License: MIT
 LicenseUrl: https://github.com/drodrigues55/zip-buddy/blob/main/LICENSE
-Copyright: Copyright (c) 2026 Zip Buddy Contributors
+Copyright: Copyright (c) 2026 Zip Buddy Open Source Team
 ShortDescription: 100% free, fast, and secure native Windows archive manager built with .NET 10 and WinUI 3.
 Description: |-
   Zip Buddy is a modern, high-performance Windows desktop archive manager inspired by the workflows of Bandizip and 7-Zip.
@@ -124,7 +124,7 @@ PackageName: Zip Buddy
 PackageUrl: https://github.com/drodrigues55/zip-buddy
 License: MIT
 LicenseUrl: https://github.com/drodrigues55/zip-buddy/blob/main/LICENSE
-Copyright: Copyright (c) 2026 Zip Buddy Authors
+Copyright: Copyright (c) 2026 Zip Buddy Open Source Team
 ShortDescription: Gerenciador de arquivos compactados nativo para Windows, 100% gratuito, rápido e seguro.
 Description: |-
   O Zip Buddy é um gerenciador de compactação e descompactação moderno e veloz para Windows, inspirado no fluxo do Bandizip e 7-Zip.

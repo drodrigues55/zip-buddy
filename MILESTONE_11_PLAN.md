@@ -31,8 +31,8 @@
 ### A. Metadados e Identidade de Versão (v1.0.0 GA)
 - Atualizado `Directory.Build.props` para versão unificada `1.0.0` com todos os metadados oficiais:
   - `Company`: Zip Buddy Open Source Team
-  - `Authors`: Zip Buddy Authors
-  - `Copyright`: Copyright (c) 2026 Zip Buddy Authors
+  - `Authors`: Zip Buddy Open Source Team
+  - `Copyright`: Copyright (c) 2026 Zip Buddy Open Source Team
   - `PackageLicenseExpression`: MIT
   - `PackageProjectUrl` e `RepositoryUrl`
 - Sincronizado Inno Setup (`zipbuddy_setup.iss` -> `1.0.0`) e inicializadores.

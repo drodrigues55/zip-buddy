@@ -70,9 +70,6 @@ if (-not $SkipBuild) {
     $rootUpdaterExe = Join-Path $projectRoot "ZipBuddyUpdater.exe"
     Copy-Item $updaterPublishExe $rootUpdaterExe -Force
 
-    # Aliases for MyUnzip / Zip Buddy interchangeable naming
-    Copy-Item $rootExe (Join-Path $projectRoot "MyUnzip.exe") -Force
-    Copy-Item $rootUpdaterExe (Join-Path $projectRoot "MyUnzipUpdater.exe") -Force
 }
 
 if (-not (Test-Path $rootExe)) {
@@ -115,7 +112,7 @@ $hashFile = Join-Path $distDir "ZipBuddySetup-x64-v$Version.exe.sha256"
 # are still available in their publish folders and are packaged by prepare_github_release.ps1.
 $rootInstaller = Join-Path $projectRoot "ZipBuddySetup-x64-v$Version.exe"
 Copy-Item $installerOutput $rootInstaller -Force
-foreach ($transient in @("ZipBuddy.UI.exe", "ZipBuddyUpdater.exe", "MyUnzip.exe", "MyUnzipUpdater.exe")) {
+foreach ($transient in @("ZipBuddy.UI.exe", "ZipBuddyUpdater.exe")) {
     $transientPath = Join-Path $projectRoot $transient
     if (Test-Path $transientPath) {
         Remove-Item $transientPath -Force -ErrorAction SilentlyContinue

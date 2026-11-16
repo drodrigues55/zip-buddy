@@ -23,6 +23,6 @@ ProductCode: '{8B036367-AE8C-4D88-B1F3-E18F2E23A534}_is1'
 Installers:
   - Architecture: x64
     InstallerUrl: https://github.com/drodrigues55/zip-buddy/releases/download/v1.1.0/ZipBuddySetup-x64-v1.1.0.exe
-    InstallerSha256: 98DB7EA7DE992D208E6A3881D140798FA8A1EB16DB25CA8A6E668A7CF9BE9E54
+    InstallerSha256: B4FB84F91CB2B5E3E881788C76088F5E392DA9AC55ABC22CF0C467EF3BDF9300
 ManifestType: installer
 ManifestVersion: 1.9.0

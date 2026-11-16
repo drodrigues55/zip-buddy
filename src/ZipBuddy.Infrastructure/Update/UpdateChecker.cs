@@ -4,7 +4,7 @@ namespace ZipBuddy.Infrastructure.Update;
 
 /// <summary>
 /// Offline-safe update checker. Strictly maintains zero-network isolation in the main application
-/// by delegating all checks to the external ZipBuddyUpdater.exe / MyUnzipUpdater.exe process.
+/// by delegating all checks to the external ZipBuddyUpdater.exe process.
 /// </summary>
 public class UpdateChecker
 {

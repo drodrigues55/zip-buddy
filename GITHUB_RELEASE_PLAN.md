@@ -14,7 +14,7 @@ O GitHub rejeita commits que contenham arquivos individuais superiores a **100 M
 | Arquivo / Localização | Tamanho Atual | Situação no Git | Risco de Rejeição pelo GitHub |
 |---|---|---|---|
 | `ZipBuddy.UI.exe` (na raiz) | **129,40 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
-| `MyUnzip.exe` (na raiz) | **129,40 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
+| `ZipBuddy.UI.exe` (na raiz, portable) | **130 MB** | Ignorado (`/*.exe`) | ✅ Seguro (alias `MyUnzip.exe` removido na v1.1.0) |
 | `dist\ZipBuddySetup-x64-v1.0.0.exe` | **162,36 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
 | `dist\ZipBuddySetup-x64-v1.0.11.exe` | **82,28 MB** | Untracked (`??`) | ⚠️ Próximo do limite |
 | `src\ZipBuddy.Launcher\bin\...` | 170,47 MB | Ignorado por `.gitignore` | ✅ Seguro (já ignorado) |

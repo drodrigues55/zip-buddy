@@ -177,6 +177,7 @@ Executar o binário **portable** e o **instalador** em Windows 11 x64 e Windows 
 - [x] `packaging/validate_phase2.ps1` + `qa/PHASE2_CHECKLIST.md` (ferramentas da Fase 2)
 - [x] Limpeza de chaves HKCU do menu na desinstalação (`--unregister-context-menu` + `[UninstallRun]`), validada por `packaging/measure_install_flow.ps1` (0/4 resíduos)
 - [x] Fase 5: wizard com checkbox destacado para adicionar o menu, fallback em silencioso, padrão cascata no app e no instalador
+- [x] Unificação de marca: aliases `MyUnzip*` removidos de código, instalador, manifestos e docs; publicador único `Zip Buddy Open Source Team`; instalador caiu de ~165 MB para ~84 MB
 - [ ] Matriz M01–M11 preenchida com evidências (screenshots/logs) — **Fase 4**
 - [x] README + notas de release v1.1.0 atualizadas
 - [x] Artefatos RC gerados e validados localmente (dist/)

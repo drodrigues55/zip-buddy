@@ -8,7 +8,7 @@ namespace ZipBuddy.Infrastructure.Update;
 /// <summary>
 /// Process-isolated update coordinator. Ensures the main application makes ZERO network requests.
 /// All HTTPS communications, cryptographic validations, and package downloads are strictly
-/// delegated to the separate ZipBuddyUpdater.exe / MyUnzipUpdater.exe process.
+/// delegated to the separate ZipBuddyUpdater.exe process.
 /// </summary>
 public class ProcessUpdateCoordinator : IUpdateCoordinator
 {
@@ -194,7 +194,6 @@ public class ProcessUpdateCoordinator : IUpdateCoordinator
         var candidates = new List<string>
         {
             Path.Combine(baseDir, "ZipBuddyUpdater.exe"),
-            Path.Combine(baseDir, "MyUnzipUpdater.exe"),
             Path.Combine(baseDir, "ZipBuddyUpdater.dll"),
             // Dev directories
             Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\..\ZipBuddy.Updater\bin\Debug\net10.0-windows\ZipBuddyUpdater.exe")),
