@@ -94,8 +94,11 @@ if (-not $gh) {
     else { throw "Nao e possivel publicar sem o GitHub CLI." }
 }
 else {
-    $auth = gh auth status 2>&1
-    if ($LASTEXITCODE -ne 0) { throw "gh nao autenticado. Execute: gh auth login`n$auth" }
+    $previousEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $auth = gh auth status 2>&1 | Out-String
+    $ErrorActionPreference = $previousEap
+    if ($LASTEXITCODE -ne 0) { throw "gh nao autenticado. Execute: gh auth login`n$($auth.Trim())" }
     Write-Host "[OK] GitHub CLI autenticado." -ForegroundColor Green
 }
 
