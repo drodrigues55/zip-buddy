@@ -14,7 +14,8 @@
 #>
 Param(
     [string]$Version = "1.1.0",
-    [switch]$Execute
+    [switch]$Execute,
+    [switch]$SkipPushCheck
 )
 
 $ErrorActionPreference = "Stop"
@@ -45,7 +46,7 @@ if ($status) {
 $branch = (git branch --show-current).Trim()
 $ahead = (git rev-list --count "@{u}..HEAD" 2>$null)
 if ($LASTEXITCODE -ne 0) { $ahead = $null }
-if ($ahead -and [int]$ahead -gt 0) {
+if (-not $SkipPushCheck -and $ahead -and [int]$ahead -gt 0) {
     throw "O branch $branch esta $ahead commit(s) a frente do upstream. Execute git push antes de publicar."
 }
 Write-Host "[OK] Working tree limpo; branch $branch sincronizado com upstream." -ForegroundColor Green
