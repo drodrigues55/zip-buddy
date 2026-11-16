@@ -49,7 +49,12 @@ if ($LASTEXITCODE -ne 0) { $ahead = $null }
 if (-not $SkipPushCheck -and $ahead -and [int]$ahead -gt 0) {
     throw "O branch $branch esta $ahead commit(s) a frente do upstream. Execute git push antes de publicar."
 }
-Write-Host "[OK] Working tree limpo; branch $branch sincronizado com upstream." -ForegroundColor Green
+if ($SkipPushCheck) {
+    Write-Host "[OK] Working tree limpo (verificacao de push ignorada por -SkipPushCheck)." -ForegroundColor Yellow
+}
+else {
+    Write-Host "[OK] Working tree limpo; branch $branch sincronizado com upstream." -ForegroundColor Green
+}
 
 # 2. Assets + checksums
 $assets = @()
