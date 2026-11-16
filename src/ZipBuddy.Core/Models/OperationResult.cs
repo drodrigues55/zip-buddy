@@ -15,6 +15,12 @@ public record OperationResult
     public TimeSpan ElapsedTime { get; init; }
     public IReadOnlyList<string> CorruptedEntries { get; init; } = [];
 
+    /// <summary>
+    /// True when the failure was caused by a missing or incorrect password.
+    /// Allows callers to prompt for credentials without parsing error text.
+    /// </summary>
+    public bool RequiresPassword { get; init; }
+
     public static OperationResult Succeeded(int filesProcessed, long bytesProcessed, TimeSpan elapsed, int filesSkipped = 0) =>
         new()
         {
@@ -45,4 +51,14 @@ public record OperationResult
             FilesProcessed = filesProcessed,
             BytesProcessed = bytesProcessed
         };
+
+    /// <summary>
+    /// Heuristic used by providers and the UI to detect credential-related failures
+    /// from archive library exceptions, which do not carry a structured error code.
+    /// </summary>
+    public static bool IndicatesPasswordFailure(string? message) =>
+        !string.IsNullOrWhiteSpace(message) &&
+        (message.Contains("password", StringComparison.OrdinalIgnoreCase) ||
+         message.Contains("encrypt", StringComparison.OrdinalIgnoreCase) ||
+         message.Contains("cryptographic", StringComparison.OrdinalIgnoreCase));
 }

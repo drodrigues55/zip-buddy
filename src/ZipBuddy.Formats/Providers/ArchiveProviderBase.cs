@@ -3,6 +3,7 @@ using System.Diagnostics;
 using ZipBuddy.Core.Interfaces;
 using ZipBuddy.Core.Models;
 using ZipBuddy.Core.Security;
+using ZipBuddy.Core.Services;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Common.Options;
@@ -180,7 +181,8 @@ public abstract class ArchiveProviderBase : IArchiveProvider
 
             if (string.IsNullOrEmpty(request.Password) && entriesToExtract.Any(e => !e.IsDirectory && e.IsEncrypted))
             {
-                return OperationResult.Failed("Archive or entries are encrypted. Password is required to extract.", null, filesProcessed, bytesProcessed);
+                return OperationResult.Failed("Archive or entries are encrypted. Password is required to extract.", null, filesProcessed, bytesProcessed)
+                    with { RequiresPassword = true };
             }
 
             long totalBytes = entriesToExtract.Where(e => !e.IsDirectory).Sum(e => e.Size);
@@ -421,15 +423,38 @@ public abstract class ArchiveProviderBase : IArchiveProvider
                     try
                     {
                         using var stream = entry.OpenEntryStream();
+                        var runningCrc = ChecksumCalculator.Crc32Initial;
                         int read;
                         while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
                         {
+                            runningCrc = ChecksumCalculator.Crc32Update(runningCrc, buffer.AsSpan(0, read));
                             bytesProcessed += read;
                         }
+
+                        // SharpCompress does not always surface a CRC failure while reading an entry
+                        // stream, so verify the decompressed bytes against the stored CRC ourselves.
+                        // TAR-based formats carry no per-entry CRC (SharpCompress reports 0), so only
+                        // verify formats that actually store a CRC32 in their entry headers.
+                        if (Format is ArchiveFormat.Zip or ArchiveFormat.SevenZip && entry.Crc > 0)
+                        {
+                            var computedCrc = ChecksumCalculator.Crc32Finalize(runningCrc);
+                            if (computedCrc != (uint)entry.Crc)
+                            {
+                                throw new InvalidDataException(
+                                    $"CRC mismatch: expected {entry.Crc:X8}, computed {computedCrc:X8}");
+                            }
+                        }
+
                         filesProcessed++;
 
                         if (request.Progress != null)
                         {
+                            var elapsedSeconds = stopwatch.Elapsed.TotalSeconds;
+                            var bytesPerSecond = elapsedSeconds > 0 ? bytesProcessed / elapsedSeconds : 0.0;
+                            TimeSpan? estimatedTimeRemaining = null;
+                            if (bytesPerSecond > 0 && bytesProcessed < totalBytes)
+                                estimatedTimeRemaining = TimeSpan.FromSeconds((totalBytes - bytesProcessed) / bytesPerSecond);
+
                             request.Progress.Report(new OperationProgress
                             {
                                 BytesProcessed = bytesProcessed,
@@ -437,6 +462,8 @@ public abstract class ArchiveProviderBase : IArchiveProvider
                                 FilesProcessed = filesProcessed,
                                 TotalFiles = totalFiles,
                                 CurrentItemName = entry.Key ?? string.Empty,
+                                BytesPerSecond = bytesPerSecond,
+                                EstimatedTimeRemaining = estimatedTimeRemaining,
                                 OperationPhase = "Testing"
                             });
                         }
@@ -456,6 +483,7 @@ public abstract class ArchiveProviderBase : IArchiveProvider
                         ErrorMessage = $"{corrupted.Count} files failed integrity verification.",
                         DetailedError = string.Join(Environment.NewLine, corrupted),
                         CorruptedEntries = corrupted,
+                        RequiresPassword = corrupted.Any(c => OperationResult.IndicatesPasswordFailure(c)),
                         FilesProcessed = filesProcessed,
                         BytesProcessed = bytesProcessed,
                         ElapsedTime = stopwatch.Elapsed
@@ -466,7 +494,8 @@ public abstract class ArchiveProviderBase : IArchiveProvider
             }
             catch (Exception ex)
             {
-                return OperationResult.Failed($"Integrity test failed: {ex.Message}", ex.ToString());
+                return OperationResult.Failed($"Integrity test failed: {ex.Message}", ex.ToString())
+                    with { RequiresPassword = OperationResult.IndicatesPasswordFailure(ex.Message) };
             }
         }, cancellationToken);
     }
