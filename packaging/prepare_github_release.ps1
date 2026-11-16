@@ -41,8 +41,13 @@ $tempPortableDir = Join-Path $env:TEMP ("ZipBuddy_Portable_" + [Guid]::NewGuid()
 New-Item -ItemType Directory -Path $tempPortableDir -Force | Out-Null
 
 try {
-    Copy-Item (Join-Path $projectRoot "ZipBuddy.UI.exe") (Join-Path $tempPortableDir "ZipBuddy.UI.exe") -Force
-    Copy-Item (Join-Path $projectRoot "ZipBuddyUpdater.exe") (Join-Path $tempPortableDir "ZipBuddyUpdater.exe") -Force
+    # Source the portable binaries from their publish folders so the repository root can stay clean.
+    $launcherPublishExe = Join-Path $projectRoot "src\ZipBuddy.Launcher\bin\Release\net10.0-windows\win-x64\publish\ZipBuddy.UI.exe"
+    $updaterPublishExe = Join-Path $projectRoot "src\ZipBuddy.Updater\bin\Release\net10.0-windows\win-x64\publish\ZipBuddyUpdater.exe"
+    $portableExe = if (Test-Path $launcherPublishExe) { $launcherPublishExe } else { Join-Path $projectRoot "ZipBuddy.UI.exe" }
+    $updaterExe = if (Test-Path $updaterPublishExe) { $updaterPublishExe } else { Join-Path $projectRoot "ZipBuddyUpdater.exe" }
+    Copy-Item $portableExe (Join-Path $tempPortableDir "ZipBuddy.UI.exe") -Force
+    Copy-Item $updaterExe (Join-Path $tempPortableDir "ZipBuddyUpdater.exe") -Force
     Copy-Item (Join-Path $projectRoot "README.md") (Join-Path $tempPortableDir "README.md") -Force
     Copy-Item (Join-Path $projectRoot "THIRD-PARTY-NOTICES.md") (Join-Path $tempPortableDir "THIRD-PARTY-NOTICES.md") -Force
 

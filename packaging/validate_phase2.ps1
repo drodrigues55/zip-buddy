@@ -191,8 +191,7 @@ if ($Publish) {
         & dotnet publish (Join-Path $projectRoot "src\ZipBuddy.Launcher\ZipBuddy.Launcher.csproj") -c Release -r win-x64 2>&1 | Out-Null
         $launcher = Join-Path $projectRoot "src\ZipBuddy.Launcher\bin\Release\net10.0-windows\win-x64\publish\ZipBuddy.UI.exe"
         if (Test-Path $launcher) {
-            Copy-Item -Path $launcher -Destination (Join-Path $projectRoot "ZipBuddy.UI.exe") -Force
-            Add-Check "A06" "Artefatos" "PASS" "Portable publicado e copiado para a raiz"
+            Add-Check "A06" "Artefatos" "PASS" "Launcher publicado na pasta de publish do projeto"
         }
         else {
             Add-Check "A06" "Artefatos" "FAIL" "Launcher publicado, mas executavel nao encontrado: $launcher"
@@ -200,15 +199,15 @@ if ($Publish) {
     }
 }
 
-$portable = Join-Path $projectRoot "ZipBuddy.UI.exe"
-if (Test-Path $portable) {
-    $hash = (Get-FileHash -Path $portable -Algorithm SHA256).Hash
-    $size = [math]::Round((Get-Item $portable).Length / 1MB, 2)
-    $script:environment["Portable SHA256"] = $hash
-    Add-Check "A06" "Artefatos" "PASS" "ZipBuddy.UI.exe ($size MB), SHA256=$hash"
+$rootInstaller = Join-Path $projectRoot "ZipBuddySetup-x64-v$version.exe"
+if (Test-Path $rootInstaller) {
+    $hash = (Get-FileHash -Path $rootInstaller -Algorithm SHA256).Hash
+    $size = [math]::Round((Get-Item $rootInstaller).Length / 1MB, 2)
+    $script:environment["Instalador raiz SHA256"] = $hash
+    Add-Check "A06" "Artefatos" "PASS" "ZipBuddySetup-x64-v$version.exe ($size MB), SHA256=$hash"
 }
 else {
-    Add-Check "A06" "Artefatos" "WARN" "Portable nao encontrado na raiz; execute -Publish ou packaging\build_installer.ps1"
+    Add-Check "A06" "Artefatos" "WARN" "Instalador nao encontrado na raiz; execute packaging\build_installer.ps1 -Version $version"
 }
 
 $installerDir = Join-Path $projectRoot "dist"

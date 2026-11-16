@@ -111,6 +111,17 @@ $hash = (Get-FileHash -Path $installerOutput -Algorithm SHA256).Hash
 $hashFile = Join-Path $distDir "ZipBuddySetup-x64-v$Version.exe.sha256"
 "$hash  ZipBuddySetup-x64-v$Version.exe" | Out-File -FilePath $hashFile -Encoding utf8
 
+# Leave only the correctly named installer in the repository root. The portable binaries
+# are still available in their publish folders and are packaged by prepare_github_release.ps1.
+$rootInstaller = Join-Path $projectRoot "ZipBuddySetup-x64-v$Version.exe"
+Copy-Item $installerOutput $rootInstaller -Force
+foreach ($transient in @("ZipBuddy.UI.exe", "ZipBuddyUpdater.exe", "MyUnzip.exe", "MyUnzipUpdater.exe")) {
+    $transientPath = Join-Path $projectRoot $transient
+    if (Test-Path $transientPath) {
+        Remove-Item $transientPath -Force -ErrorAction SilentlyContinue
+    }
+}
+
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host "[+] Installer successfully created!" -ForegroundColor Green
 Write-Host "    Path:   $installerOutput" -ForegroundColor White
