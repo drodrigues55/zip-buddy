@@ -159,15 +159,59 @@ try
     sw.Restart();
     batchCol.ReplaceRange(sampleItems);
     sw.Stop();
-    var batchMs = sw.ElapsedMilliseconds;
+    var batchMs = sw.Elapsed.TotalMilliseconds;
 
     var slowCol = new ObservableCollection<string>();
     sw.Restart();
     foreach (var item in sampleItems) slowCol.Add(item);
     sw.Stop();
-    var slowMs = sw.ElapsedMilliseconds;
+    var slowMs = sw.Elapsed.TotalMilliseconds;
 
-    Console.WriteLine($"| Batch UI Replace (5000)   | UI     | {batchMs,12} | {slowMs / Math.Max(1.0, (double)batchMs),12:F1}x faster   |             |");
+    Console.WriteLine($"| Batch UI Replace (5000)   | UI     | {batchMs,12:F2} | {slowMs / Math.Max(0.01, batchMs),12:F1}x faster   |             |");
+
+    // 10. Integrity test (CRC verification) on a real 10,000-entry archive
+    Console.WriteLine();
+    Console.WriteLine("[*] Building 10,000-entry archive for integrity benchmark...");
+    var manyDir = Path.Combine(tempDir, "many_entries");
+    Directory.CreateDirectory(manyDir);
+    var manyPaths = new List<string>(10_000);
+    for (int i = 0; i < 10_000; i++)
+    {
+        var entryPath = Path.Combine(manyDir, $"entry_{i:D6}.bin");
+        File.WriteAllBytes(entryPath, new byte[16]);
+        manyPaths.Add(entryPath);
+    }
+
+    var manyArchive = Path.Combine(tempDir, "bench_10k.zip");
+    var createMany = await engine.CreateArchiveAsync(new CompressionRequest
+    {
+        OutputArchiveFilePath = manyArchive,
+        Format = ArchiveFormat.Zip,
+        SourcePaths = manyPaths,
+        Options = new CompressionOptions { Level = CompressionLevel.Store }
+    });
+
+    if (!createMany.Success)
+    {
+        throw new InvalidOperationException($"Falha ao criar arquivo de 10.000 entradas: {createMany.ErrorMessage}");
+    }
+
+    var manyBytes = new FileInfo(manyArchive).Length;
+    var manyMemBefore = GC.GetTotalMemory(true);
+    sw.Restart();
+    var testMany = await engine.TestArchiveAsync(new TestArchiveRequest { ArchiveFilePath = manyArchive });
+    sw.Stop();
+    var manyMemAfter = GC.GetTotalMemory(false);
+    var entriesPerSecond = sw.Elapsed.TotalSeconds > 0 ? 10_000.0 / sw.Elapsed.TotalSeconds : 0.0;
+    var manyThroughput = (manyBytes / (1024.0 * 1024.0)) / Math.Max(sw.Elapsed.TotalSeconds, 0.001);
+
+    Console.WriteLine($"| Test Archive (10,000 entries) | ZIP | {sw.ElapsedMilliseconds,12} | {entriesPerSecond,11:F0} entries/s | {Math.Max(0, (manyMemAfter - manyMemBefore) / (1024.0 * 1024.0)),11:F2} |");
+    Console.WriteLine($"[*] Integrity result: success={testMany.Success}, filesProcessed={testMany.FilesProcessed}, corrupted={testMany.CorruptedEntries.Count}, archived={manyBytes / (1024.0 * 1024.0):F2} MB, throughput={manyThroughput:F2} MB/s");
+
+    if (!testMany.Success || testMany.FilesProcessed != 10_000)
+    {
+        throw new InvalidOperationException("O benchmark de integridade nao processou as 10.000 entradas esperadas.");
+    }
 
     Console.WriteLine("===============================================================================");
     Console.ForegroundColor = ConsoleColor.Green;

@@ -1,24 +1,26 @@
 # Plano de Implementação: Adequação de Estrutura, Higienização de Tamanho e Publicação no GitHub Releases
 
-> **Versão Alvo:** 1.0.0 (General Availability)  
-> **Status:** Pronto para Execução 📋  
-> **Objetivo:** Adequar a estrutura de pastas do projeto, isolar arquivos binários pesados (> 100 MB) para não violar as restrições de push do GitHub, higienizar o repositório Git e automatizar a geração do kit oficial de release para publicação no GitHub Releases e Winget.
+> **Versão Alvo:** 1.1.0 (atual) — o plano original visava 1.0.0 GA  
+> **Status:** Concluído ✅ — release publicada em 16/11/2026: https://github.com/drodrigues55/zip-buddy/releases/tag/v1.1.0  
+> **Objetivo:** Adequar a estrutura de pastas do projeto, isolar arquivos binários pesados (> 100 MB) para não violar as restrições de push do GitHub, higienizar o repositório Git e automatizar a geração do kit oficial de release para publicação no GitHub Releases e Winget.  
+> **Nota histórica:** as seções abaixo descrevem o processo original (v1.0.0). Os comandos e caminhos já foram atualizados para v1.1.0, que é a versão efetivamente publicada.
 
 ---
 
 ## 1. Diagnóstico e Auditoria Atual
 
 ### A. Violações de Limite de Arquivo do GitHub (Hard Limit de 100 MB)
-O GitHub rejeita commits que contenham arquivos individuais superiores a **100 MB** (`remote: error: GH001: Large files detected`). Atualmente, os seguintes arquivos estão desprotegidos na raiz ou em pastas não ignoradas:
+O GitHub rejeita commits que contenham arquivos individuais superiores a **100 MB** (`remote: error: GH001: Large files detected`). **Situação atual (v1.1.0):** todos os binários estão protegidos; a raiz contém apenas o instalador e ele é ignorado pelo Git.
 
-| Arquivo / Localização | Tamanho Atual | Situação no Git | Risco de Rejeição pelo GitHub |
+| Arquivo / Localização | Tamanho atual | Situação no Git | Resultado |
 |---|---|---|---|
-| `ZipBuddy.UI.exe` (na raiz) | **129,40 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
-| `ZipBuddy.UI.exe` (na raiz, portable) | **130 MB** | Ignorado (`/*.exe`) | ✅ Seguro (alias `MyUnzip.exe` removido na v1.1.0) |
-| `dist\ZipBuddySetup-x64-v1.0.0.exe` | **162,36 MB** | Untracked (`??`) | ❌ **BLOQUEIA O PUSH** |
-| `dist\ZipBuddySetup-x64-v1.0.11.exe` | **82,28 MB** | Untracked (`??`) | ⚠️ Próximo do limite |
-| `src\ZipBuddy.Launcher\bin\...` | 170,47 MB | Ignorado por `.gitignore` | ✅ Seguro (já ignorado) |
-| `.packages\...` (NuGet cache) | 161,80 MB | Ignorado por `.gitignore` | ✅ Seguro (já ignorado) |
+| `ZipBuddySetup-x64-v1.1.0.exe` (raiz) | 83,87 MB | Ignorado (`/*.exe`) | ✅ Seguro |
+| `dist\ZipBuddySetup-x64-v1.1.0.exe` | 83,87 MB | Ignorado (`dist/`) | ✅ Seguro |
+| `dist\release\*` (5 assets) | ~174 MB no total | Ignorado (`dist/`) | ✅ Publicados como assets da release |
+| `src\ZipBuddy.*\bin\...` | — | Ignorado por `.gitignore` | ✅ Seguro |
+| `.packages\...` (NuGet cache) | — | Ignorado por `.gitignore` | ✅ Seguro |
+
+Aliases legados `MyUnzip.exe` / `MyUnzipUpdater.exe` foram removidos na v1.1.0; o instalador caiu de ~165 MB para 83,87 MB.
 
 ### B. Princípio Fundamental de Arquitetura de Repositório
 * **Git Repository (Código):** Deve conter **apenas** código-fonte, configurações, scripts, manifestos e documentação (~5 MB a 10 MB total).
@@ -91,7 +93,7 @@ No terminal:
 ```powershell
 git status  # Deve mostrar apenas código-fonte, sem arquivos > 100 MB
 git add .
-git commit -m "feat: Zip Buddy v1.0.0 General Availability release"
+git commit -m "build(release): publish Zip Buddy v1.1.0"
 git branch -M main
 git remote add origin https://github.com/drodrigues55/zip-buddy.git  # se ainda não configurado
 git push -u origin main
@@ -102,35 +104,37 @@ Existem duas opções práticas:
 
 * **Opção A (Via Navegador / Interface Web):**
   1. Acessar `https://github.com/drodrigues55/zip-buddy/releases/new`.
-  2. Escolher a tag: `v1.0.0`.
-  3. Título: `Zip Buddy v1.0.0 (General Availability)`.
-  4. Descrição: Colar as notas da versão e a tabela de hashes SHA-256.
+  2. Escolher a tag: `v1.1.0`.
+  3. Título: `Zip Buddy v1.1.0 — Integrity, Checksums and E-mail Workflows`.
+  4. Descrição: Colar o conteúdo de `packaging\RELEASE_NOTES_v1.1.0.md`.
   5. Arrastar os arquivos de `dist/release/`:
-     * `ZipBuddySetup-x64-v1.0.0.exe`
-     * `ZipBuddySetup-x64-v1.0.0.exe.sha256`
-     * `ZipBuddy-v1.0.0-windows-x64-portable.zip`
-     * `ZipBuddy-v1.0.0-windows-x64-portable.zip.sha256`
+     * `ZipBuddySetup-x64-v1.1.0.exe`
+     * `ZipBuddySetup-x64-v1.1.0.exe.sha256`
+     * `ZipBuddy-v1.1.0-windows-x64-portable.zip`
+     * `ZipBuddy-v1.1.0-windows-x64-portable.zip.sha256`
      * `manifest.json`
   6. Clicar em **Publish release**.
 
 * **Opção B (Via Terminal com GitHub CLI `gh`):**
   ```powershell
-  gh release create v1.0.0 dist\release\* --title "Zip Buddy v1.0.0 (General Availability)" --notes-file packaging\RELEASE_NOTES_v1.0.0.md
+  powershell -ExecutionPolicy Bypass -File packaging\publish_pre_release.ps1 -Execute
+  # equivalente: gh release create v1.1.0 --title "..." --notes-file packaging\RELEASE_NOTES_v1.1.0.md --prerelease dist\release\*
   ```
 
 ### 3.3 Submissão ao Windows Package Manager (Winget)
 Com o instalador hospedado na URL pública oficial do GitHub Releases:
 ```powershell
-wingetcreate submit packaging\winget\manifests\f\Zip Buddy\Zip Buddy\1.0.0
+wingetcreate submit packaging\winget\manifests\z\ZipBuddy\ZipBuddy\1.1.0
 ```
 
 ---
 
-## 3. Checklist de Validação
+## 4. Checklist de Validação
 
-- [ ] `.gitignore` bloqueia `*.exe` na raiz e diretório `dist/`
-- [ ] `git status` não lista nenhum arquivo acima de 100 MB
-- [ ] Tamanho total do commit inicial é inferior a 15 MB
-- [ ] `dist/release/` contém o instalador, o pacote portátil, hashes e manifest.json
-- [ ] Manifestos do Winget v1.0.0 contêm o hash exato do instalador
-- [ ] Todos os 121 testes automatizados continuam passando com 100% de sucesso
+- [x] `.gitignore` bloqueia `*.exe` na raiz e diretório `dist/`
+- [x] `git status` não lista nenhum arquivo acima de 100 MB
+- [x] Tamanho total do código versionado é inferior a 15 MB
+- [x] `dist/release/` contém o instalador, o pacote portátil, hashes e `manifest.json` (5 assets)
+- [x] Manifestos do Winget v1.1.0 contêm o hash exato do instalador (`B4FB84F9…`)
+- [x] Todos os **246** testes automatizados passam com 100% de sucesso
+- [x] Release `v1.1.0` publicada com os 5 assets e as notas de release

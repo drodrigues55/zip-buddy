@@ -996,7 +996,7 @@ Deliver:
 ## Milestone 10 — Finalização da Base Atual & Homologação RC
 
 > **Status:** Concluído (Complete) ✅  
-> **Resultado:** 123 testes aprovados (100%), 0 erros, 0 warnings (.NET 10).
+> **Resultado:** 123 testes aprovados na época do milestone; **246 testes aprovados (100%) na v1.1.0**, 0 erros de build (.NET 10).
 
 Consolidação completa da base técnica do produto antes da etapa de publicação:
 * **Compatibilidade Multi-Formato & Corpus:** Suporte completo de leitura e escrita para ZIP, 7Z, TAR, GZ, BZ2 e extração de RAR, testado contra caminhos longos, caracteres Unicode/acentuação/emojis e árvores com mais de 15 níveis.
@@ -1012,8 +1012,9 @@ Consolidação completa da base técnica do produto antes da etapa de publicaç�
 
 ## Milestone 11 — Release Engineering & Packaging
 
-> **Status:** Implementado (Aguardando validação formal de máquina limpa) 🟡  
-> **Objetivo:** Definir, gerar e auditar o artefato final de distribuição x64 para o ecossistema Windows e WinGet.
+> **Status:** Concluído ✅ — artefato v1.1.0 gerado, auditado e publicado em 16/11/2026  
+> **Objetivo:** Definir, gerar e auditar o artefato final de distribuição x64 para o ecossistema Windows e WinGet.  
+> **Resultado:** `ZipBuddySetup-x64-v1.1.0.exe` (83,87 MB, SHA-256 `B4FB84F9…`), portable ZIP, `manifest.json` assinado e manifests winget en-US/pt-BR. `verify_release_candidate.ps1`: 100% PASS.
 
 ### 1. Especificação do Artefato
 * **Plataforma & Arquitetura:** Windows 10 / Windows 11 (x64 nativo).
@@ -1077,13 +1078,13 @@ ZipBuddyUpdater.exe
 
 ## Milestone 13 — WinGet Preflight
 
-> **Status:** Em Andamento ⏳  
+> **Status:** Concluído ✅ (gates locais; submissão do PR acompanha o Milestone 15)  
 > **Objetivo:** Gate obrigatório com verificação formal de todos os requisitos do WinGet antes da submissão do Pull Request.
 
 ### Checklist Obrigatório Pré-Submissão (26 Itens)
 
 ```text
-[x] 01. Instalador final x64 gerado (ZipBuddySetup-x64-v1.0.0.exe / v1.0.1.exe)
+[x] 01. Instalador final x64 gerado (ZipBuddySetup-x64-v1.1.0.exe — 83,87 MB)
 [x] 02. InstallerType identificado corretamente como 'inno'
 [x] 03. Instalação silenciosa testada localmente (/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-)
 [x] 04. SilentWithProgress testado localmente (/SILENT /SUPPRESSMSGBOXES /NORESTART /SP-)
@@ -1165,7 +1166,7 @@ Caminho oficial: `packaging/winget/manifests/z/ZipBuddy/ZipBuddy/<Version>/`
 
 ## Milestone 15 — WinGet Submission
 
-> **Status:** Em Andamento (PR submetido, aguardando validação do pipeline) ⏳  
+> **Status:** Pendente ⏳ — manifests v1.1.0 prontos em `packaging\winget\manifests\z\ZipBuddy\ZipBuddy\1.1.0\`; PR ainda não submetido ao `microsoft/winget-pkgs`  
 > **Objetivo:** Submeter e manter o Pull Request oficial no repositório `microsoft/winget-pkgs`.
 
 ### 1. Regras de Estrutura do Pull Request

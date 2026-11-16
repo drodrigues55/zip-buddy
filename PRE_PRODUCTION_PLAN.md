@@ -164,7 +164,7 @@ Executar o binário **portable** e o **instalador** em Windows 11 x64 e Windows 
 | Registro do Explorer varia entre builds do Windows | Validar M01/M03 em Windows 10 e 11; usar apenas `MUIVerb` + valor padrão + `Icon`, sem `Extended`/APIs não documentadas |
 | MAPI ausente ou cliente mal configurado | Fallback `mailto:` + `/select`; nunca propagar exceção para a janela de progresso |
 | Hash CRC-64 com variante diferente da esperada pelo usuário | Documentar explicitamente **CRC-64/XZ (ECMA-182 reflectado)** e exibir vetor conhecido na documentação |
-| Janela de progresso com arquivo de 10.000+ entradas | Manter progresso em `DispatcherQueue.TryEnqueue` e medir tempo de teste no benchmark |
+| Janela de progresso com arquivo de 10.000+ entradas | Progresso via `DispatcherQueue.TryEnqueue`; benchmark executado: **10.000 entradas verificadas em 247 ms (~40.473 entradas/s), delta de memória 12,94 MB**, 0 corrompidos |
 | Regressão de i18n | Gate automatizado: todos os catálogos com paridade en-US/pt-BR antes do merge |
 
 ---
@@ -178,6 +178,7 @@ Executar o binário **portable** e o **instalador** em Windows 11 x64 e Windows 
 - [x] Limpeza de chaves HKCU do menu na desinstalação (`--unregister-context-menu` + `[UninstallRun]`), validada por `packaging/measure_install_flow.ps1` (0/4 resíduos)
 - [x] Fase 5: wizard com checkbox destacado para adicionar o menu, fallback em silencioso, padrão cascata no app e no instalador
 - [x] Unificação de marca: aliases `MyUnzip*` removidos de código, instalador, manifestos e docs; publicador único `Zip Buddy Open Source Team`; instalador caiu de ~165 MB para ~84 MB
+- [x] Benchmark de integridade com 10.000 entradas executado (`src/ZipBuddy.Benchmarks`) e docs históricos (release plan / implementation plan) atualizados para v1.1.0
 - [ ] Matriz M01–M11 preenchida com evidências (screenshots/logs) — **Fase 4**
 - [x] README + notas de release v1.1.0 atualizadas
 - [x] Artefatos RC gerados e validados localmente (dist/)
