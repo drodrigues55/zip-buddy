@@ -38,9 +38,9 @@ BundleArtifacts/
 *.appxbundle
 *.appxupload
 
-# Publish output
+# Publish output (profiles in Properties/PublishProfiles are versioned on purpose)
 publish/
-*.pubxml
+*.pubxml.user
 PublishScripts/
 
 # Code analysis and tooling
