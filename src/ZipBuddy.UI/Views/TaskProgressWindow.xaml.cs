@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using System.Globalization;
 using ZipBuddy.Core.Interfaces;
 using ZipBuddy.Core.Models;
 using ZipBuddy.Infrastructure.Logging;
 using ZipBuddy.Windows.Notifications;
 using ZipBuddy.Windows.Shell;
+using ZipBuddy.Windows.System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -14,7 +16,7 @@ namespace ZipBuddy.UI.Views;
 
 public sealed partial class TaskProgressWindow : Window, IDisposable
 {
-    public enum TaskType { Extract, Compress }
+    public enum TaskType { Extract, Compress, Test }
 
     private readonly TaskType _taskType;
     private readonly string _primaryPath;
@@ -23,6 +25,7 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
     private readonly ArchiveFormat _compressFormat;
     private readonly IReadOnlyList<string>? _sourcePaths;
     private readonly CompressionOptions? _compressionOptions;
+    private readonly bool _openEmailAfter;
 
     private readonly IArchiveEngine _engine;
     private readonly ISettingsService _settings;
@@ -37,6 +40,10 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
 
     private bool IsPortuguese() => _loc?.CurrentCulture?.StartsWith("pt", StringComparison.OrdinalIgnoreCase) == true;
 
+    private string T(string key) => _loc?.GetString(key) ?? key;
+
+    private string T(string key, params object[] args) => _loc?.GetString(key, args) ?? key;
+
     public TaskProgressWindow(
         TaskType taskType,
         string primaryPath,
@@ -45,7 +52,8 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
         bool openFolderAfter = false,
         ArchiveFormat compressFormat = ArchiveFormat.Zip,
         IReadOnlyList<string>? sourcePaths = null,
-        CompressionOptions? compressionOptions = null)
+        CompressionOptions? compressionOptions = null,
+        bool openEmailAfter = false)
     {
         InitializeComponent();
 
@@ -56,6 +64,7 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
         _compressFormat = compressFormat;
         _sourcePaths = sourcePaths;
         _compressionOptions = compressionOptions ?? CompressionOptions.Default;
+        _openEmailAfter = openEmailAfter;
 
         _engine = App.Services.GetRequiredService<IArchiveEngine>();
         _settings = App.Services.GetRequiredService<ISettingsService>();
@@ -83,6 +92,13 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
             {
                 try { _sourceArchiveLength = new FileInfo(_primaryPath).Length; } catch { }
             }
+        }
+        else if (_taskType == TaskType.Test)
+        {
+            Title = T("Task_TestingTitle", fileName);
+            TitleTextBlock.Text = T("Task_TestingSubtitle", fileName);
+            OperationIcon.Glyph = "\uE9CE"; // Shield / Check
+            OpenFolderCheckBox.Visibility = Visibility.Collapsed;
         }
         else
         {
@@ -219,9 +235,98 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
         {
             await RunExtractionAsync();
         }
-        else
+        else if (_taskType == TaskType.Compress)
         {
             await RunCompressionAsync();
+        }
+        else if (_taskType == TaskType.Test)
+        {
+            await RunTestingAsync();
+        }
+    }
+
+    private async Task RunTestingAsync()
+    {
+        var archivePath = _primaryPath;
+
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            string? password = null;
+            var passwordAttempts = 0;
+
+            var progress = new Progress<OperationProgress>(p =>
+            {
+                ItemProgressBar.Value = p.ItemPercentage;
+                TaskProgressBar.Value = p.Percentage;
+                ItemPercentageTextBlock.Text = $"{p.ItemPercentage:F0}%";
+                TotalPercentageTextBlock.Text = $"{p.Percentage:F0}%";
+
+                if (!string.IsNullOrEmpty(p.CurrentItemName))
+                {
+                    CurrentItemTextBlock.Text = p.CurrentItemName;
+                }
+
+                ProcessedCountTextBlock.Text = T("Task_Processed", p.FilesProcessed, p.TotalFiles);
+                var speed = p.BytesPerSecond > 0
+                    ? $"{ArchiveEntry.FormatBytes((long)p.BytesPerSecond)}/s"
+                    : T("Task_Calculating");
+                SpeedTextBlock.Text = T("Task_Speed", speed);
+                ElapsedTextBlock.Text = stopwatch.Elapsed.ToString(@"mm\:ss", CultureInfo.InvariantCulture);
+            });
+
+            var request = new TestArchiveRequest
+            {
+                ArchiveFilePath = archivePath,
+                Password = password,
+                Progress = progress
+            };
+
+            var result = await _engine.TestArchiveAsync(request, _cts.Token);
+
+            while (!result.Success && !result.IsCancelled && !_cts.IsCancellationRequested &&
+                   (result.RequiresPassword || OperationResult.IndicatesPasswordFailure(result.ErrorMessage)))
+            {
+                password = await PromptPasswordAsync();
+                if (string.IsNullOrEmpty(password))
+                {
+                    FinishWithCancellation();
+                    return;
+                }
+
+                if (++passwordAttempts >= 3)
+                {
+                    FinishWithError(T("Task_TestPasswordAttempts"));
+                    return;
+                }
+
+                request = request with { Password = password };
+                result = await _engine.TestArchiveAsync(request, _cts.Token);
+            }
+
+            if (result.Success)
+            {
+                await FinishWithSuccess(
+                    title: T("Task_TestCompleteTitle"),
+                    message: T("Task_TestCompleteMessage", result.FilesProcessed),
+                    openFolderTarget: null);
+            }
+            else if (result.IsCancelled)
+            {
+                FinishWithCancellation();
+            }
+            else
+            {
+                FinishWithError(result.ErrorMessage ?? T("Task_TestFailed"));
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            FinishWithCancellation();
+        }
+        catch (Exception ex)
+        {
+            FinishWithError(T("Task_TestError", ex.Message));
         }
     }
 
@@ -335,9 +440,7 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
             var result = await _engine.ExtractAsync(request, _cts.Token);
 
             while (!result.Success && !result.IsCancelled && !_cts.IsCancellationRequested &&
-                   (result.ErrorMessage?.Contains("password", StringComparison.OrdinalIgnoreCase) == true ||
-                    result.ErrorMessage?.Contains("cryptographic", StringComparison.OrdinalIgnoreCase) == true ||
-                    result.ErrorMessage?.Contains("encryption", StringComparison.OrdinalIgnoreCase) == true))
+                   (result.RequiresPassword || OperationResult.IndicatesPasswordFailure(result.ErrorMessage)))
             {
                 password = await PromptPasswordAsync();
                 if (string.IsNullOrEmpty(password))
@@ -466,7 +569,7 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
         TaskProgressBar.Value = 100;
         ItemPercentageTextBlock.Text = "100%";
         TotalPercentageTextBlock.Text = "100%";
-        CurrentItemTextBlock.Text = "Concluído com sucesso";
+        CurrentItemTextBlock.Text = T("Task_Complete");
 
         if (_settings.NotifyOnTaskCompletion)
         {
@@ -492,6 +595,20 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
         if (shouldOpenFolder && !string.IsNullOrEmpty(openFolderTarget))
         {
             ShellOperations.OpenFolderAndSelect(openFolderTarget);
+        }
+
+        // Send email with created archive if requested. MAPI dialogs are modal, so they must
+        // not run on the UI thread of the progress window (B2).
+        if (_openEmailAfter && File.Exists(_destinationPath))
+        {
+            try
+            {
+                await EmailService.SendFileByEmailAsync(_destinationPath);
+            }
+            catch (Exception ex)
+            {
+                _logger.Warn($"Could not open e-mail client for {_destinationPath}: {ex.Message}");
+            }
         }
 
         var shouldKeepOpen = KeepWindowOpenCheckBox.IsChecked == true;

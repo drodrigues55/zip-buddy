@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="ZipBuddy.UI.Views.CompressOptionsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Adicionar ao arquivo compactado — Zip Buddy"
+    mc:Ignorable="d">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TitleBar x:Name="AppTitleBar" Title="Adicionar ao arquivo compactado — Zip Buddy">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="Assets/AppIcon.ico" />
+            </TitleBar.IconSource>
+        </TitleBar>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Padding="24,14,24,16" Spacing="14">
+                <!-- Source Target Info -->
+                <StackPanel Spacing="4">
+                    <TextBlock x:Name="SourceLabelTextBlock" Text="Item de origem:" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock x:Name="SourcePathTextBlock" Text="C:\Path\To\File" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+                <!-- Destination path with Browse -->
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="DestinationPathBox"
+                             Header="Salvar arquivo em:"
+                             PlaceholderText="Caminho do arquivo de destino..." />
+                    <Button x:Name="BrowseButton" Grid.Column="1"
+                            VerticalAlignment="Bottom"
+                            Content="Procurar..."
+                            Click="OnBrowseClick" />
+                </Grid>
+
+                <!-- Format and Level -->
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox x:Name="FormatComboBox" Grid.Column="0" Header="Formato do arquivo:" HorizontalAlignment="Stretch" SelectedIndex="0" SelectionChanged="OnFormatChanged">
+                        <ComboBoxItem Content="ZIP (.zip)" />
+                        <ComboBoxItem Content="7-Zip (.7z)" />
+                        <ComboBoxItem Content="TAR (.tar)" />
+                        <ComboBoxItem Content="GZip (.tar.gz)" />
+                    </ComboBox>
+
+                    <ComboBox x:Name="LevelComboBox" Grid.Column="1" Header="Nível de compressão:" HorizontalAlignment="Stretch" SelectedIndex="2">
+                        <ComboBoxItem Content="Sem compressão (Armazenar)" />
+                        <ComboBoxItem Content="Rápido" />
+                        <ComboBoxItem Content="Normal (Padrão)" />
+                        <ComboBoxItem Content="Máximo" />
+                        <ComboBoxItem Content="Ultra" />
+                    </ComboBox>
+                </Grid>
+
+                <!-- Password Box -->
+                <PasswordBox x:Name="ArchivePasswordBox" Header="Senha (opcional):" PlaceholderText="Deixe em branco para não criptografar" />
+
+                <!-- Email Checkbox -->
+                <CheckBox x:Name="SendEmailCheckBox" Content="Enviar por e-mail após compactar" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Bottom bar -->
+        <Border Grid.Row="2" Background="{ThemeResource LayerFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,1,0,0" Padding="20,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button x:Name="CompressButton" Content="Compactar" Style="{ThemeResource AccentButtonStyle}" Click="OnCompressClick" />
+                <Button x:Name="CancelButton" Content="Cancelar" Click="OnCancelClick" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
+

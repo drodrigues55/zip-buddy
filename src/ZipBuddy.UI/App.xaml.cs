@@ -7,6 +7,7 @@ using ZipBuddy.Infrastructure.TempFiles;
 using ZipBuddy.UI.ViewModels;
 using ZipBuddy.UI.Views;
 using ZipBuddy.Windows.Notifications;
+using ZipBuddy.Windows.Shell;
 using ZipBuddy.Infrastructure.Update;
 using ZipBuddy.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -148,6 +149,130 @@ public partial class App : Application
                     destinationPath: sevenZipPath,
                     compressFormat: ArchiveFormat.SevenZip,
                     sourcePaths: [target]);
+                progressWin.Activate();
+                return;
+            }
+
+            // Invoked by the Inno Setup installer (post-install checkbox / silent entry).
+            // Persists the choice in settings.json so the Settings UI stays in sync with Explorer.
+            if (verb == "--register-context-menu")
+            {
+                bool cascading;
+                if (cmdArgs.Length > 2)
+                {
+                    var mode = cmdArgs[2];
+                    cascading = !mode.Equals("flat", StringComparison.OrdinalIgnoreCase) &&
+                                !mode.Equals("plano", StringComparison.OrdinalIgnoreCase);
+                }
+                else
+                {
+                    cascading = settings.UseCascadingContextMenu;
+                }
+
+                settings.EnableContextMenu = true;
+                settings.UseCascadingContextMenu = cascading;
+                try { await settings.SaveAsync(); } catch { }
+
+                var locService = Services.GetService<ILocalizationService>();
+                var isPt = locService?.CurrentCulture?.StartsWith("pt", StringComparison.OrdinalIgnoreCase) ?? true;
+                var commands = settings.EnabledContextMenuCommands ?? [];
+
+                try
+                {
+                    ContextMenuManager.RegisterContextMenu(
+                        Environment.ProcessPath ?? string.Empty,
+                        enableOpenWith: commands.Contains("OpenWith", StringComparer.OrdinalIgnoreCase),
+                        enableExtractHere: commands.Contains("ExtractHere", StringComparer.OrdinalIgnoreCase),
+                        enableExtractToFolder: commands.Contains("ExtractToFolder", StringComparer.OrdinalIgnoreCase),
+                        enableExtractTo: commands.Contains("ExtractTo", StringComparer.OrdinalIgnoreCase),
+                        enableCompressToZip: commands.Contains("CompressToZip", StringComparer.OrdinalIgnoreCase),
+                        enableCompressTo7z: commands.Contains("CompressTo7z", StringComparer.OrdinalIgnoreCase),
+                        useCascadingMenu: cascading,
+                        isPortuguese: isPt);
+                }
+                catch { }
+
+                // Exit() alone does not stop WinUI when no Window was ever created (the dispatcher
+                // keeps running), which would hang the installer/uninstaller waiting for this process.
+                Environment.Exit(0);
+                return;
+            }
+
+            // Invoked by the Inno Setup uninstaller so the per-user HKCU context-menu keys are removed.
+            if (verb == "--unregister-context-menu")
+            {
+                try { ContextMenuManager.UnregisterContextMenu(); } catch { }
+                Environment.Exit(0);
+                return;
+            }
+
+            if (verb == "--test-archive" && cmdArgs.Length > 2)
+            {
+                var archive = cmdArgs[2];
+                var progressWin = new TaskProgressWindow(
+                    TaskProgressWindow.TaskType.Test,
+                    primaryPath: archive,
+                    destinationPath: string.Empty);
+                progressWin.Activate();
+                return;
+            }
+
+            if (verb == "--crc-sha" && cmdArgs.Length > 2)
+            {
+                var target = cmdArgs[2];
+                var checksumWin = new ChecksumWindow(target);
+                checksumWin.Activate();
+                return;
+            }
+
+            if (verb == "--compress-dialog" && cmdArgs.Length > 2)
+            {
+                var target = cmdArgs[2];
+                var compressWin = new CompressOptionsWindow(target, sendEmailAfter: false);
+                compressWin.Activate();
+                return;
+            }
+
+            if (verb == "--compress-email-dialog" && cmdArgs.Length > 2)
+            {
+                var target = cmdArgs[2];
+                var compressWin = new CompressOptionsWindow(target, sendEmailAfter: true);
+                compressWin.Activate();
+                return;
+            }
+
+            if (verb == "--compress-email-zip" && cmdArgs.Length > 2)
+            {
+                var target = cmdArgs[2];
+                var zipPath = Path.HasExtension(target) && !Directory.Exists(target)
+                    ? Path.ChangeExtension(target, ".zip")
+                    : target.TrimEnd('\\', '/') + ".zip";
+
+                var progressWin = new TaskProgressWindow(
+                    TaskProgressWindow.TaskType.Compress,
+                    zipPath,
+                    destinationPath: zipPath,
+                    compressFormat: ArchiveFormat.Zip,
+                    sourcePaths: [target],
+                    openEmailAfter: true);
+                progressWin.Activate();
+                return;
+            }
+
+            if (verb == "--compress-email-7z" && cmdArgs.Length > 2)
+            {
+                var target = cmdArgs[2];
+                var sevenZipPath = Path.HasExtension(target) && !Directory.Exists(target)
+                    ? Path.ChangeExtension(target, ".7z")
+                    : target.TrimEnd('\\', '/') + ".7z";
+
+                var progressWin = new TaskProgressWindow(
+                    TaskProgressWindow.TaskType.Compress,
+                    sevenZipPath,
+                    destinationPath: sevenZipPath,
+                    compressFormat: ArchiveFormat.SevenZip,
+                    sourcePaths: [target],
+                    openEmailAfter: true);
                 progressWin.Activate();
                 return;
             }
