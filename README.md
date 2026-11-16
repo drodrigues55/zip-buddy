@@ -9,16 +9,16 @@
   <img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%2010-0078D6?style=flat-square&logo=windows&logoColor=white" alt="Windows" />
   <img src="https://img.shields.io/badge/Architecture-x64-blue?style=flat-square" alt="x64" />
   <img src="https://img.shields.io/badge/UI-WinUI%203%20%2F%20Windows%20App%20SDK-0078D4?style=flat-square" alt="WinUI 3" />
-  <img src="https://img.shields.io/badge/Tests-121%20Passed%20(100%25)-success?style=flat-square" alt="Tests" />
+  <img src="https://img.shields.io/badge/Tests-246%20Passed%20(100%25)-success?style=flat-square" alt="Tests" />
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License MIT" />
-  <img src="https://img.shields.io/badge/Release-v1.0.0%20(GA)-success?style=flat-square" alt="Version 1.0.0" />
+  <img src="https://img.shields.io/badge/Release-v1.1.0-success?style=flat-square" alt="Version 1.1.0" />
 </p>
 
 ---
 
 ## ⚡ Overview
 
-**Zip Buddy** is an open-source, modern archive manager engineered in C# on **.NET 10** with **WinUI 3** and the **Windows App SDK**. Built to eliminate the clunky, decades-old interfaces of legacy archivers, Zip Buddy delivers a fluid **Mica backdrop**, native dark/light themes, multi-language support (**English & Português do Brasil**), seamless Windows Explorer shell integration with official app icons, dedicated micro-task progress windows, complete offline network isolation, and enterprise-grade security hardening against decompression vulnerabilities.
+**Zip Buddy** is an open-source, modern archive manager engineered in C# on **.NET 10** with **WinUI 3** and the **Windows App SDK**. Built to eliminate the clunky, decades-old interfaces of legacy archivers, Zip Buddy delivers a fluid **Mica backdrop**, native dark/light themes, multi-language support (**English & Português do Brasil**), seamless Windows Explorer shell integration with official app icons, dedicated micro-task progress windows, **archive integrity testing**, **CRC-32 / CRC-64 / SHA-1 / SHA-256 checksums**, **compress-and-e-mail workflows**, complete offline network isolation, and enterprise-grade security hardening against decompression vulnerabilities.
 
 ---
 
@@ -49,15 +49,23 @@
   - **Password Prompts:** In-place secure password entry with show/hide password toggle.
 - **Configurable Auto-Close:** Automatically closes upon operation completion or displays detailed error logs if issues occur.
 
+### 🔎 Integrity Testing & Checksums (new in v1.1.0)
+- **Test Archive (`--test-archive`):** streams every entry and verifies the stored CRC32 against the decompressed bytes; corrupted entries are listed under "See more details" with real-time throughput and ETA. Encrypted archives prompt for a password (max. 3 attempts).
+- **CRC SHA (`--crc-sha`):** computes **CRC-32**, **CRC-64/XZ**, **SHA-1** and **SHA-256** for any file with a compact copy-to-clipboard window. Streaming implementation handles multi-gigabyte files with cancellation and progress.
+
+### 📧 Compression & E-mail (new in v1.1.0)
+- **Add to archive... (`--compress-dialog`):** choose destination, format (ZIP, 7-Zip, TAR, .tar.gz), compression level and optional AES password; invalid destinations and unsupported password/level combinations are blocked up front.
+- **Compress and e-mail (`--compress-email-zip`, `--compress-email-7z`):** creates the archive and opens the default mail client with the file attached (MAPI), falling back to a `mailto:` link plus Explorer file selection when no client is installed. The MAPI dialog runs off the UI thread, so the progress window stays responsive.
+
 ### 📁 Native Windows Shell Integration
-- **Clean Context Menu:** Direct integration into the Windows File Explorer right-click menu with native application branding icons (`{exe},0`).
+- **Clean Context Menu:** Direct integration into the Windows File Explorer right-click menu with native application branding icons (`{exe},0`). The installer offers a highlighted, checked-by-default option to add the **12-command cascading menu**; silent/winget installs register it automatically. Settings → File Explorer can switch back to the legacy flat menu at any time.
 - **Cascading Submenu Option:** Group all commands under a single `Zip Buddy >` menu or show individual top-level verbs.
-- **Smart Task Verbs:**
-  - `Extract Here` (`--extract-here`)
-  - `Extract to Folder` (`--extract-to-folder`)
-  - `Extract to...` (`--extract-to`)
-  - `Compress to .zip` (`--compress-zip`)
-  - `Compress to .7z` (`--compress-7z`)
+- **Smart Task Verbs:** the cascading menu groups up to 12 localized commands — Open archive, Extract files..., Extract here, Extract to folder, **Test archive**, **Add to archive...**, **Compress and e-mail...**, Add to 7Z, Compress to 7Z and e-mail, Add to ZIP, Compress to ZIP and e-mail and **CRC SHA**. Every toggle in Settings is honored in both cascading and flat modes.
+  - `Extract Here` (`--extract-here`) · `Extract to Folder` (`--extract-to-folder`) · `Extract to...` (`--extract-to`)
+  - `Test archive` (`--test-archive`) · `CRC SHA` (`--crc-sha`)
+  - `Add to archive...` (`--compress-dialog`) · `Compress and e-mail...` (`--compress-email-dialog`)
+  - `Compress to .zip` (`--compress-zip`) · `Compress to .7z` (`--compress-7z`)
+  - `Compress to ZIP + e-mail` (`--compress-email-zip`) · `Compress to 7Z + e-mail` (`--compress-email-7z`)
 
 ### 🛡️ Enterprise-Grade Security Hardening
 - **Path Traversal / Zip Slip Protection:** Strict path validation rejecting directory traversal tokens (`../`, `..\`), absolute drive letters (`C:\`), and network UNC paths (`\\share\`).
@@ -93,11 +101,11 @@ winget install ZipBuddy.ZipBuddy
 ```
 
 ### Option 2: Setup Installer (Inno Setup)
-Download `ZipBuddySetup-x64-v1.0.0.exe` from the [Latest Release](https://github.com/drodrigues55/zip-buddy/releases).
+Download `ZipBuddySetup-x64-v1.1.0.exe` from the [Latest Release](https://github.com/drodrigues55/zip-buddy/releases).
 
 **Silent / Unattended Install:**
 ```powershell
-ZipBuddySetup-x64-v1.0.0.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+ZipBuddySetup-x64-v1.1.0.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
 ```
 
 ### Option 3: Portable Executable
@@ -124,6 +132,20 @@ ZipBuddy.UI.exe --compress-zip "C:\path\to\file1.txt" "C:\path\to\folder2"
 
 # Quickly compress into a high-compression 7-Zip (.7z) archive
 ZipBuddy.UI.exe --compress-7z "C:\path\to\data_directory"
+
+# Test archive integrity (CRC verification, prompts for password when needed)
+ZipBuddy.UI.exe --test-archive "C:\path\to\archive.zip"
+
+# Compute CRC-32, CRC-64/XZ, SHA-1 and SHA-256 for any file
+ZipBuddy.UI.exe --crc-sha "C:\path\to\file.bin"
+
+# Open the compression options dialog (optional e-mail checkbox)
+ZipBuddy.UI.exe --compress-dialog "C:\path\to\file.txt"
+ZipBuddy.UI.exe --compress-email-dialog "C:\path\to\file.txt"
+
+# Create an archive and open the default e-mail client with it attached
+ZipBuddy.UI.exe --compress-email-zip "C:\path\to\file.txt"
+ZipBuddy.UI.exe --compress-email-7z "C:\path\to\data_directory"
 ```
 
 ---
@@ -141,7 +163,7 @@ src/
 ├── ZipBuddy.UI/              # WinUI 3 desktop application, MVVM ViewModels, Mica window, Dialogs
 ├── ZipBuddy.Launcher/        # Single-file bundle bootstrapping and process management
 ├── ZipBuddy.Benchmarks/      # Benchmark suite measuring throughput and query latencies
-└── ZipBuddy.Tests/           # xUnit test suite (Security, Compatibility, Options, Detection) - 93 tests
+└── ZipBuddy.Tests/           # xUnit test suite (Security, Compatibility, Options, Integrity, i18n) - 246 tests
 ```
 
 ---
@@ -162,16 +184,19 @@ cd zip-buddy
 # Build entire solution
 dotnet build ZipBuddy.slnx -c Release
 
-# Run complete test suite (93 tests)
+# Run complete test suite (246 tests)
 dotnet test
 
 # Run performance benchmarks
 dotnet run --project src/ZipBuddy.Benchmarks -c Release
 
-# Build official Inno Setup installer & Winget manifests
-powershell -ExecutionPolicy Bypass -File packaging/build_installer.ps1
-powershell -ExecutionPolicy Bypass -File packaging/generate_winget_manifest.ps1
-powershell -ExecutionPolicy Bypass -File packaging/verify_release_candidate.ps1
+# Build official Inno Setup installer & Winget manifests (use -Version 1.1.0)
+powershell -ExecutionPolicy Bypass -File packaging/build_installer.ps1 -Version 1.1.0
+powershell -ExecutionPolicy Bypass -File packaging/generate_winget_manifest.ps1 -Version 1.1.0
+powershell -ExecutionPolicy Bypass -File packaging/verify_release_candidate.ps1 -Version 1.1.0
+
+# Pre-production QA gates + interactive M01-M11 checklist
+powershell -ExecutionPolicy Bypass -File packaging/validate_phase2.ps1 -Publish -Interactive
 ```
 
 ---
