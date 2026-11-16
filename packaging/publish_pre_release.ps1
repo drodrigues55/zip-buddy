@@ -100,7 +100,6 @@ $command = @(
     "  --title `"$title`"",
     "  --notes-file `"$notes`"",
     "  --prerelease",
-    "  --verify-tag",
     "  $assetArgs"
 ) -join "`n"
 
@@ -114,7 +113,7 @@ Write-Host "Notas: $notes" -ForegroundColor White
 if ($Execute) {
     Write-Host ""
     Write-Host "Publicando..." -ForegroundColor Yellow
-    & gh release create "v$Version" --title $title --notes-file $notes --prerelease --verify-tag @assets
+    & gh release create "v$Version" --title $title --notes-file $notes --prerelease @assets
     if ($LASTEXITCODE -ne 0) { throw "gh release create falhou com exit code $LASTEXITCODE" }
     Write-Host "[OK] Pre-release publicada: https://github.com/drodrigues55/zip-buddy/releases/tag/v$Version" -ForegroundColor Green
 }
