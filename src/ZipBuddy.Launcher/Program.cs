@@ -27,13 +27,22 @@ internal static class Program
             var appPath = Path.Combine(installDirectory, "ZipBuddy.UI.exe");
             var markerPath = Path.Combine(installDirectory, ".launcher-version");
 
+            // Helper verbs (installer/uninstaller integration) never create a window; the launcher
+            // must wait for them to finish instead of waiting for a main window that will not exist.
+            var isHelperVerb = args.Any(a =>
+                string.Equals(a, "--register-context-menu", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(a, "--unregister-context-menu", StringComparison.OrdinalIgnoreCase));
+
             CleanupUnusedInstallations(installsDirectory, installDirectory);
 
+            // Include the launcher's own timestamp so a rebuilt bundle with the same version
+            // still refreshes the extracted app (otherwise stale binaries are reused).
+            var markerContent = version + "|" + File.GetLastWriteTimeUtc(Environment.ProcessPath ?? string.Empty).Ticks;
             var priPath = Path.Combine(installDirectory, "ZipBuddy.UI.pri");
             var needsInstall = !File.Exists(appPath) ||
                 !File.Exists(priPath) ||
                 !File.Exists(markerPath) ||
-                !string.Equals(File.ReadAllText(markerPath).Trim(), version, StringComparison.Ordinal);
+                !string.Equals(File.ReadAllText(markerPath).Trim(), markerContent, StringComparison.Ordinal);
 
             if (needsInstall)
             {
@@ -41,7 +50,7 @@ internal static class Program
                 using var payload = Assembly.GetExecutingAssembly().GetManifestResourceStream("ZipBuddyPayload.zip")
                     ?? throw new InvalidOperationException("O pacote do Zip Buddy não foi encontrado dentro deste executável.");
                 ZipFile.ExtractToDirectory(payload, installDirectory, overwriteFiles: true);
-                File.WriteAllText(markerPath, version);
+                File.WriteAllText(markerPath, markerContent);
             }
 
             var startInfo = new ProcessStartInfo
@@ -49,7 +58,7 @@ internal static class Program
                 FileName = appPath,
                 WorkingDirectory = installDirectory,
                 UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Normal
+                WindowStyle = isHelperVerb ? ProcessWindowStyle.Hidden : ProcessWindowStyle.Normal
             };
 
             foreach (var argument in args)
@@ -59,6 +68,12 @@ internal static class Program
 
             var appProcess = Process.Start(startInfo)
                 ?? throw new InvalidOperationException("O Windows não conseguiu iniciar o Zip Buddy.");
+
+            if (isHelperVerb)
+            {
+                appProcess.WaitForExit();
+                return;
+            }
 
             var window = WaitForMainWindow(appProcess.Id);
             if (window == IntPtr.Zero)
