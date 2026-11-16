@@ -123,8 +123,13 @@ Write-Host "Notas: $notes" -ForegroundColor White
 if ($Execute) {
     Write-Host ""
     Write-Host "Publicando..." -ForegroundColor Yellow
-    & gh release create "v$Version" --title $title --notes-file $notes --prerelease @assets
-    if ($LASTEXITCODE -ne 0) { throw "gh release create falhou com exit code $LASTEXITCODE" }
+    $previousEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $ghOutput = & gh release create "v$Version" --title $title --notes-file $notes --prerelease @assets 2>&1 | Out-String
+    $ErrorActionPreference = $previousEap
+    if ($LASTEXITCODE -ne 0) {
+        throw "gh release create falhou (exit $LASTEXITCODE):`n$($ghOutput.Trim())"
+    }
     Write-Host "[OK] Pre-release publicada: https://github.com/drodrigues55/zip-buddy/releases/tag/v$Version" -ForegroundColor Green
 }
 else {
