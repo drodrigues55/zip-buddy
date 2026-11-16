@@ -140,12 +140,12 @@ public class LocalizationTests
     }
 
     [Fact]
-    public void AssemblyVersion_MatchesGeneralAvailability_Version_1_0_X()
+    public void AssemblyVersion_IsAtLeastRelease_1_1()
     {
         var version = typeof(LocalizationService).Assembly.GetName().Version;
         Assert.NotNull(version);
         Assert.Equal(1, version.Major);
-        Assert.Equal(0, version.Minor);
+        Assert.True(version.Minor >= 1, $"Expected v1.1.0 or newer, got {version}.");
         Assert.True(version.Build >= 0);
     }
 

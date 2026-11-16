@@ -1,8 +1,8 @@
-; Zip Buddy Inno Setup Script
+﻿; Zip Buddy Inno Setup Script
 ; Generates silent-install capable, Winget-ready native Windows installer
 
 #define MyAppName "Zip Buddy"
-#define MyAppVersion "1.0.1"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "Zip Buddy Contributors"
 #define MyAppURL "https://github.com/drodrigues55/zip-buddy"
 #define MyAppExeName "ZipBuddy.UI.exe"
@@ -36,6 +36,13 @@ UsedUserAreasWarning=no
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
+
+[CustomMessages]
+; Script is saved as UTF-8 with BOM so these accents and the star are read correctly.
+AddContextMenuCaption=★ Add Zip Buddy to the Windows context menu (RECOMMENDED)
+brazilianportuguese.AddContextMenuCaption=★ Adicionar Zip Buddy ao menu de contexto do Windows (RECOMENDADO)
+OpenDefaultAppsCaption=Open Default Apps settings
+brazilianportuguese.OpenDefaultAppsCaption=Abrir Configurações de aplicativos padrão
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -129,9 +136,23 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes
 Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\shell\open\command"; ValueType: string; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey
 
 [Run]
-Filename: "{sys}\schtasks.exe"; Parameters: "/Create /TN ""Zip Buddy\ZipBuddyUpdateTask"" /TR """"{app}\ZipBuddyUpdater.exe"""" --auto --silent"" /SC DAILY /F"; Flags: runhidden; Tasks: autoupdate
+; 1) Highlighted, checked on first install: register the cascading context menu for the installing user.
+Filename: "{app}\{#MyAppExeName}"; Parameters: "--register-context-menu cascading"; Description: "{cm:AddContextMenuCaption}"; Flags: postinstall runasoriginaluser
+; 2) Windows does not allow setting default associations programmatically - only open the Settings page.
+Filename: "ms-settings:defaultapps"; Description: "{cm:OpenDefaultAppsCaption}"; Flags: postinstall shellexec skipifsilent unchecked
+; 3) Existing launch-app entry.
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-Filename: "ms-settings:defaultapps"; Description: "Definir Zip Buddy como aplicativo padrão nas Configurações do Windows"; Flags: postinstall shellexec skipifsilent unchecked
+; 4) Silent installs (winget / /VERYSILENT) have no Finish page, so register the menu unconditionally there.
+Filename: "{app}\{#MyAppExeName}"; Parameters: "--register-context-menu cascading"; Flags: runhidden runasoriginaluser skipifnotsilent
+; 5) Scheduled task for automatic updates (unchanged).
+Filename: "{sys}\schtasks.exe"; Parameters: "/Create /TN ""Zip Buddy\ZipBuddyUpdateTask"" /TR """"{app}\ZipBuddyUpdater.exe"""" --auto --silent"" /SC DAILY /F"; Flags: runhidden; Tasks: autoupdate
 
 [UninstallRun]
-Filename: "{sys}\schtasks.exe"; Parameters: "/Delete /TN ""Zip Buddy\ZipBuddyUpdateTask"" /F"; Flags: runhidden
+; Remove the scheduled task (elevated context is fine for HKLM/task scheduler).
+Filename: "{sys}\schtasks.exe"; Parameters: "/Delete /TN ""Zip Buddy\ZipBuddyUpdateTask"" /F"; Flags: runhidden; RunOnceId: "ZipBuddyRemoveUpdateTask"
+; Remove the per-user HKCU context-menu keys written by the app at runtime.
+; The app's UnregisterContextMenu() cleans both the cascading group and the 6 legacy flat verbs
+; across all supported extensions. Note: on a per-machine install this HKCU is the elevated
+; account's hive; other users' per-user menu keys must be removed by running the app once as
+; that user with --unregister-context-menu (documented in the release notes).
+Filename: "{app}\{#MyAppExeName}"; Parameters: "--unregister-context-menu"; Flags: runhidden skipifdoesntexist; RunOnceId: "ZipBuddyUnregisterContextMenu"

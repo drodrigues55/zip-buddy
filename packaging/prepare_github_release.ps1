@@ -90,7 +90,7 @@ Get-ChildItem -Path $releaseDir -File | Where-Object { $_.Extension -ne ".sha256
 
     $sizeMb = [math]::Round($_.Length / 1MB, 2)
     $name = $_.Name
-    $summaryLines += "| `$name` | $sizeMb MB | `$hash` |"
+    $summaryLines += "| ``$name`` | $sizeMb MB | ``$hash`` |"
 }
 
 Write-Host ""

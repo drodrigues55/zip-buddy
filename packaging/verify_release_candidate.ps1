@@ -1,6 +1,6 @@
 # Release Candidate Automated Verification Script for Zip Buddy
 Param(
-    [string]$Version = "1.0.11"
+    [string]$Version = "1.1.0"
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,7 +15,7 @@ $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $distDir = Join-Path $projectRoot "dist"
 $installerExe = Join-Path $distDir "ZipBuddySetup-x64-v$Version.exe"
 $hashFile = Join-Path $distDir "ZipBuddySetup-x64-v$Version.exe.sha256"
-$wingetDir = Join-Path $projectRoot "packaging\winget\manifests\f\Zip Buddy\Zip Buddy\$Version"
+$wingetDir = Join-Path $projectRoot "packaging\winget\manifests\z\ZipBuddy\ZipBuddy\$Version"
 
 $testSandboxDir = Join-Path $env:TEMP ("ZipBuddy_RC_Verify_" + [Guid]::NewGuid().ToString("N"))
 
@@ -49,8 +49,9 @@ try {
     $versionManifest = Join-Path $wingetDir "ZipBuddy.ZipBuddy.yaml"
     $installerManifest = Join-Path $wingetDir "ZipBuddy.ZipBuddy.installer.yaml"
     $localeManifest = Join-Path $wingetDir "ZipBuddy.ZipBuddy.locale.en-US.yaml"
+    $localePtBrManifest = Join-Path $wingetDir "ZipBuddy.ZipBuddy.locale.pt-BR.yaml"
 
-    foreach ($m in @($versionManifest, $installerManifest, $localeManifest)) {
+    foreach ($m in @($versionManifest, $installerManifest, $localeManifest, $localePtBrManifest)) {
         if (-not (Test-Path $m)) {
             throw "Winget manifest missing: $m"
         }
