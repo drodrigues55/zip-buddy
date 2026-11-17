@@ -181,6 +181,7 @@ Executar o binário **portable** e o **instalador** em Windows 11 x64 e Windows 
 - [x] Unificação de marca: aliases `MyUnzip*` removidos de código, instalador, manifestos e docs; publicador único `Zip Buddy Open Source Team`; instalador caiu de ~165 MB para ~84 MB
 - [x] Benchmark de integridade com 10.000 entradas executado (`src/ZipBuddy.Benchmarks`) e docs históricos (release plan / implementation plan) atualizados para v1.1.0
 - [x] Diagnóstico dos PRs do winget-pkgs (#447753: URL 404; #447809: schema 1.9.0 deprecado) e conversão dos manifests para **schema 1.28.0**, validada com `winget validate` (detalhes em `packaging/WINGET_SUBMISSION.md`)
+- [x] PR #482144 corrigido após `Validation-Unattended-Failed`: `ElevationRequirement: elevationRequired` adicionado (ambiente de validação roda como usuário padrão)
 - [ ] Matriz M01–M11 preenchida com evidências (screenshots/logs) — **Fase 4**
 - [x] README + notas de release v1.1.0 atualizadas
 - [x] Artefatos RC gerados e validados localmente (dist/)

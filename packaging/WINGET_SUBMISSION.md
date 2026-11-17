@@ -47,9 +47,25 @@ Checks a observar após abrir o PR:
 3. `LicenseUrl`/`PublisherUrl` — apontam para `github.com/drodrigues55/zip-buddy` (correto).
 4. **SmartScreen**: o PR #447753 tomou flag de SmartScreen. O instalador não é assinado digitalmente; se o check recorrir, será necessário assinar o `.exe` com certificado de code signing (preferencialmente EV).
 
+## Correção pós-validação #1 — `Validation-Unattended-Failed` (17/11/2026)
+
+O PR #482144 recebeu o label `Validation-Unattended-Failed`: *"failed to install without user input"*. Os switches `Silent`/`SilentWithProgress` e o `InstallerType: inno` já estavam corretos — a causa é que o **ambiente de validação roda como usuário padrão** e o instalador grava em `Program Files`/HKLM, disparando UAC.
+
+Correção aplicada no manifesto do instalador:
+```yaml
+Scope: machine
+ElevationRequirement: elevationRequired
+```
+Com isso o winget eleva o instalador antes de executá-lo, sem depender de interação. `winget validate` local passou novamente.
+
+> Nota: em YAML, comentários usam `#` (não `;`). Um `;` no here-string do gerador causou erro de scanner na primeira tentativa.
+
+**Reenviar:** usar `wingetcreate submit --replace 1.1.0 ...` para atualizar o PR existente (ou editar o YAML direto no fork, branch `ZipBuddy.ZipBuddy-1.1.0-...`).
+
 ## Estado
 
 - [x] Schema 1.28.0 aplicado e validado localmente
+- [x] `ElevationRequirement: elevationRequired` adicionado após `Validation-Unattended-Failed`
 - [x] CLA aceito
 - [x] wingetcreate atualizado para 1.28.1.0
 - [x] Token classic (`public_repo`) armazenado via `wingetcreate token --store`

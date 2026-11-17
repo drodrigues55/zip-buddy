@@ -45,6 +45,9 @@ PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
 InstallerType: inno
 Scope: machine
+# Validation runs as a standard user; the installer writes to Program Files/HKLM and needs elevation
+# up front, otherwise the UAC prompt blocks unattended installation.
+ElevationRequirement: elevationRequired
 InstallModes:
   - interactive
   - silent
