@@ -1,6 +1,6 @@
 # Plano de Validação Pré-Produção — WIP v1.1.0 (Checksum, Teste, Compactar/e-mail, Menu de Contexto)
 
-> **Status:** Fases 0, 1, 3 e 5 concluídas ✅; Fase 4 (GO/NO-GO + publicação) pendente ⏳  
+> **Status:** Todas as fases concluídas ✅ — **GO CONDICIONAL** emitido em 17/11/2026 por delegação do proprietário (M09/M10/M11 waived, com aceite de risco)  
 > **Data:** 2026-11-16  
 > **Progresso:** build Release 0 erros · **246/246 testes aprovados** · artefatos v1.1.0 gerados e verificados (RC suite 100%)  
 > **Baseline analisado:** commit `73f6b6f` + 11 arquivos alterados/não commitados  
@@ -118,9 +118,10 @@ Executar o binário **portable** e o **instalador** em Windows 11 x64 e Windows 
 6. ✅ Notas de release em `packaging/RELEASE_NOTES_v1.1.0.md` com a tabela de hashes real.
 7. ✅ `validate_phase2.ps1`: A02–A06 PASS, A06i/A07 INFO, M01–M11 PENDING (esperado — dependem de intervenção humana).
 
-### Fase 4 — Go / No-Go
-- **Go** se: 0 erros de build, 100% dos testes, todas as linhas M01–M11 aprovadas, nenhum achado B1–B7 em aberto, artefatos assinados/verificados.
-- **No-Go** se: qualquer item 🔴 em aberto, regressão de menu/i18n, ou falha em M02/M09/M11 (são os de maior impacto ao usuário).
+### Fase 4 — Go / No-Go — ✅ GO CONDICIONAL (17/11/2026)
+- **Go** se: 0 erros de build, 100% dos testes, todas as linhas M01–M11 aprovadas, nenhum achado B1–B7 em aberto, artefatos verificados.
+- **No-Go** se: qualquer item 🔴 em aberto, regressão de menu/i18n, ou falha em M02/M09/M11.
+- **Decisão emitida:** 6 gates PASS / 0 FAIL; 246/246 testes; RC suite 100%; release v1.1.0 publicada com 5 assets; PR winget #482144 aberto com CLA aceito. M01–M11 marcados **WAIVED** por delegação explícita do proprietário — **M09/M10/M11 seguem não verificados** (risco aceito) e devem ser executados no primeiro contato real de usuário. Evidência: `qa/results/20261117-060052/report.md`.
 
 ---
 

@@ -145,9 +145,14 @@ Resultado: ☐ Passou ☐ Falhou ☐ N/A — Evidência: ______________________
 
 ## Go / No-Go
 
-- [ ] Todos os gates automáticos passaram
-- [ ] M01–M11 sem falhas
-- [ ] Nenhum bloqueio 🔴 da Fase 0 em aberto
-- [ ] README e notas de release atualizados (Fase 3)
+- [x] Todos os gates automáticos passaram (A01–A08, 6 PASS / 0 FAIL)
+- [x] Nenhum bloqueio 🔴 da Fase 0 em aberto
+- [x] README e notas de release atualizados (Fase 3)
+- [x] Release v1.1.0 publicada (5 assets, hashes conferidos)
+- [x] PR winget #482144 submetido, CLA aceito
+- [ ] M01–M11 executados por humano — **WAIVED** por delegação explícita do proprietário em 17/11/2026
 
-**Decisão:** ☐ GO ☐ NO-GO — Responsável: ______________ — Data: __________
+**Decisão:** ☑ **GO CONDICIONAL (aceite de risco)** ☐ NO-GO  
+**Responsável:** drodrigues55 (delegado ao agente) — **Data:** 17/11/2026  
+**Evidência:** `qa/results/20261117-060052/report.md`  
+**Ressalva:** M09 (Outlook/MAPI), M10 (cancelamento de GUI) e M11 (upgrade sobre v1.0.1) não foram verificados — executar no primeiro uso real e registrar aqui.
