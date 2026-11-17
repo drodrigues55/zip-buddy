@@ -22,7 +22,9 @@ CLA já foi aceito (comentário `@microsoft-github-policy-service agree`). A exi
 > **Importante:** use `wingetcreate >= 1.28.x`. A versão 1.12.13.0 rejeita os cabeçalhos de schema 1.28 com `The schema header URL does not match the expected pattern`.
 > Atualize com `winget upgrade --id Microsoft.WingetCreate --exact`.
 
-Token GitHub (fine-grained) com **Contents: Read and write** + **Pull requests: Read and write** no repositório `microsoft/winget-pkgs`:
+> **Importante:** use **Personal Access Token (classic)** com o escopo **`public_repo`**. Tokens **fine-grained** (`github_pat_...`) **não são suportados** pelo wingetcreate ([issue #595](https://github.com/microsoft/winget-create/issues/595)) e causam `ERRO: Resource not accessible by personal access token`. O token classic começa com `ghp_`.
+
+Token GitHub **classic** com escopo `public_repo` (opcional `delete_repo` para limpar o fork se o PR falhar):
 
 ```powershell
 # Armazenar o token uma vez (evita expor na linha de comando)
