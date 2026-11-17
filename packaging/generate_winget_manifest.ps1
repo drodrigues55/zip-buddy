@@ -44,17 +44,16 @@ $installerYaml = @"
 PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
 InstallerType: inno
-Scope: machine
-# Validation runs as a standard user; the installer writes to Program Files/HKLM and needs elevation
-# up front, otherwise the UAC prompt blocks unattended installation.
-ElevationRequirement: elevationRequired
+# Per-user install: no UAC prompt, works in the unattended validation sandbox.
+# The installer supports /CURRENTUSER (verified locally with verify_release_candidate.ps1).
+Scope: user
 InstallModes:
   - interactive
   - silent
   - silentWithProgress
 InstallerSwitches:
-  Silent: /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
-  SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+  Silent: /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /CURRENTUSER
+  SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART /SP- /CURRENTUSER
 UpgradeBehavior: install
 FileExtensions:
   - zip

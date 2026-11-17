@@ -47,20 +47,27 @@ Checks a observar após abrir o PR:
 3. `LicenseUrl`/`PublisherUrl` — apontam para `github.com/drodrigues55/zip-buddy` (correto).
 4. **SmartScreen**: o PR #447753 tomou flag de SmartScreen. O instalador não é assinado digitalmente; se o check recorrir, será necessário assinar o `.exe` com certificado de code signing (preferencialmente EV).
 
-## Correção pós-validação #1 — `Validation-Unattended-Failed` (17/11/2026)
+## Correções pós-validação — `Validation-Unattended-Failed` (17/11/2026)
 
-O PR #482144 recebeu o label `Validation-Unattended-Failed`: *"failed to install without user input"*. Os switches `Silent`/`SilentWithProgress` e o `InstallerType: inno` já estavam corretos — a causa é que o **ambiente de validação roda como usuário padrão** e o instalador grava em `Program Files`/HKLM, disparando UAC.
+O PR #482144 recebeu o label `Validation-Unattended-Failed`: *"failed to install without user input"*, mesmo com `Silent`/`SilentWithProgress` e `InstallerType: inno` corretos.
 
-Correção aplicada no manifesto do instalador:
+### Tentativa 1 — `ElevationRequirement: elevationRequired` (não resolveu)
+Adicionamos `ElevationRequirement: elevationRequired` com `Scope: machine`. O bot revalidou (~2h depois) e **falhou novamente**.
+
+### Tentativa 2 — escopo de usuário (aplicada)
+O instalador suporta `/CURRENTUSER` (validado localmente pelo `verify_release_candidate.ps1`, que instala e desinstala silenciosamente). Mudança **apenas no manifesto** — o binário/hash não muda:
+
 ```yaml
-Scope: machine
-ElevationRequirement: elevationRequired
+Scope: user
+InstallerSwitches:
+  Silent: /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /CURRENTUSER
+  SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART /SP- /CURRENTUSER
 ```
-Com isso o winget eleva o instalador antes de executá-lo, sem depender de interação. `winget validate` local passou novamente.
+Sem UAC, sem prompt — deve funcionar no sandbox de validação. `winget validate` local: **Êxito**.
 
 > Nota: em YAML, comentários usam `#` (não `;`). Um `;` no here-string do gerador causou erro de scanner na primeira tentativa.
 
-**Reenviar:** usar `wingetcreate submit --replace 1.1.0 ...` para atualizar o PR existente (ou editar o YAML direto no fork, branch `ZipBuddy.ZipBuddy-1.1.0-...`).
+**Reenviar:** editar o YAML no branch do fork (`ZipBuddy.ZipBuddy-1.1.0-5d4c9790-4005-4943-8c6c-046dd5c5e6e5`) ou fechar o PR e submeter um novo sem `--replace` (o `--replace` só funciona para pacotes já mesclados).
 
 ## Estado
 
