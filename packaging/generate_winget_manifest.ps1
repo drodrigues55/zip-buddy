@@ -28,18 +28,18 @@ $installerUrl = "$ReleaseBaseUrl$Version/ZipBuddySetup-x64-v$Version.exe"
 
 # 1. Version Manifest
 $versionYaml = @"
-# yaml-language-server: `$schema=https://aka.ms/winget-manifest.version.1.9.0.schema.json
+# yaml-language-server: `$schema=https://aka.ms/winget-manifest.version.1.28.0.schema.json
 
 PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
 DefaultLocale: en-US
 ManifestType: version
-ManifestVersion: 1.9.0
+ManifestVersion: 1.28.0
 "@
 
 # 2. Installer Manifest
 $installerYaml = @"
-# yaml-language-server: `$schema=https://aka.ms/winget-manifest.installer.1.9.0.schema.json
+# yaml-language-server: `$schema=https://aka.ms/winget-manifest.installer.1.28.0.schema.json
 
 PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
@@ -66,12 +66,12 @@ Installers:
     InstallerUrl: $installerUrl
     InstallerSha256: $sha256
 ManifestType: installer
-ManifestVersion: 1.9.0
+ManifestVersion: 1.28.0
 "@
 
 # 3. Locale Manifest
 $localeYaml = @"
-# yaml-language-server: `$schema=https://aka.ms/winget-manifest.defaultLocale.1.9.0.schema.json
+# yaml-language-server: `$schema=https://aka.ms/winget-manifest.defaultLocale.1.28.0.schema.json
 
 PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
@@ -107,12 +107,12 @@ Tags:
   - extractor
 ReleaseNotesUrl: https://github.com/drodrigues55/zip-buddy/releases/tag/v$Version
 ManifestType: defaultLocale
-ManifestVersion: 1.9.0
+ManifestVersion: 1.28.0
 "@
 
 # 4. Portuguese (Brazil) Locale Manifest
 $localePtBrYaml = @"
-# yaml-language-server: `$schema=https://aka.ms/winget-manifest.locale.1.9.0.schema.json
+# yaml-language-server: `$schema=https://aka.ms/winget-manifest.locale.1.28.0.schema.json
 
 PackageIdentifier: ZipBuddy.ZipBuddy
 PackageVersion: $Version
@@ -147,7 +147,7 @@ Tags:
   - extrator
 ReleaseNotesUrl: https://github.com/drodrigues55/zip-buddy/releases/tag/v$Version
 ManifestType: locale
-ManifestVersion: 1.9.0
+ManifestVersion: 1.28.0
 "@
 
 # Write files with UTF-8 without BOM or standard UTF-8

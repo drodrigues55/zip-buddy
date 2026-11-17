@@ -1166,7 +1166,7 @@ Caminho oficial: `packaging/winget/manifests/z/ZipBuddy/ZipBuddy/<Version>/`
 
 ## Milestone 15 — WinGet Submission
 
-> **Status:** Pendente ⏳ — manifests v1.1.0 prontos em `packaging\winget\manifests\z\ZipBuddy\ZipBuddy\1.1.0\`; PR ainda não submetido ao `microsoft/winget-pkgs`  
+> **Status:** Pendente ⏳ — manifests v1.1.0 convertidos para **schema 1.28.0** e validados; PR ainda não submetido ao `microsoft/winget-pkgs`. Diagnóstico dos PRs antigos em `packaging/WINGET_SUBMISSION.md`.  
 > **Objetivo:** Submeter e manter o Pull Request oficial no repositório `microsoft/winget-pkgs`.
 
 ### 1. Regras de Estrutura do Pull Request
