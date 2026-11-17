@@ -19,9 +19,20 @@ CLA já foi aceito (comentário `@microsoft-github-policy-service agree`). A exi
 
 ## Submissão do novo PR
 
+> **Importante:** use `wingetcreate >= 1.28.x`. A versão 1.12.13.0 rejeita os cabeçalhos de schema 1.28 com `The schema header URL does not match the expected pattern`.
+> Atualize com `winget upgrade --id Microsoft.WingetCreate --exact`.
+
+Token GitHub (fine-grained) com **Contents: Read and write** + **Pull requests: Read and write** no repositório `microsoft/winget-pkgs`:
+
 ```powershell
-# Pré-requisito: token GitHub com permissão de escrita (public_repo / repo)
-wingetcreate submit packaging\winget\manifests\z\ZipBuddy\ZipBuddy\1.1.0
+# Armazenar o token uma vez (evita expor na linha de comando)
+wingetcreate token --token SEU_TOKEN
+
+# Usar CAMINHO ABSOLUTO (caminho relativo pode gerar "ERRO: O caminho não existe")
+wingetcreate submit `
+  --prtitle "ZipBuddy.ZipBuddy version 1.1.0" `
+  --no-open `
+  "C:\Users\DRODRIGUES\Documents\zip-buddy\packaging\winget\manifests\z\ZipBuddy\ZipBuddy\1.1.0"
 ```
 
 Ou pelo site: https://github.com/microsoft/winget-pkgs/pulls → **New pull request**, base `master`, compare seu fork com os 4 YAMLs em `manifests/z/ZipBuddy/ZipBuddy/1.1.0/`.
