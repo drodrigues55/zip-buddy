@@ -51,6 +51,9 @@ Checks a observar após abrir o PR:
 
 - [x] Schema 1.28.0 aplicado e validado localmente
 - [x] CLA aceito
-- [ ] PR `ZipBuddy.ZipBuddy version 1.1.0` submetido
+- [x] wingetcreate atualizado para 1.28.1.0
+- [x] Token classic (`public_repo`) armazenado via `wingetcreate token --store`
+- [x] PR submetido: **https://github.com/microsoft/winget-pkgs/pull/482144** (17/11/2026 09:54 UTC, estado `open`)
+- [ ] Validação automática (Azure pipeline) — monitorar via API
 - [ ] Aprovação de moderador
 - [ ] `winget install ZipBuddy.ZipBuddy` funcionando
