@@ -140,9 +140,11 @@ Filename: "{app}\{#MyAppExeName}"; Parameters: "--register-context-menu cascadin
 Filename: "ms-settings:defaultapps"; Description: "{cm:OpenDefaultAppsCaption}"; Flags: postinstall shellexec skipifsilent unchecked
 ; 3) Existing launch-app entry.
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-; 4) Silent installs (winget / /VERYSILENT) have no Finish page, so register the menu unconditionally there.
-Filename: "{app}\{#MyAppExeName}"; Parameters: "--register-context-menu cascading"; Flags: runhidden runasoriginaluser skipifnotsilent
-; 5) Scheduled task for automatic updates (unchanged).
+; NOTE: there is intentionally NO skipifnotsilent entry that launches the UI. The WinUI launcher
+; can show a modal MessageBox in a non-interactive sandbox (winget validation), which is read as
+; "installation required user input". The menu is registered by the postinstall checkbox on
+; interactive installs, and can always be enabled later in the app Settings.
+; Scheduled task for automatic updates (unchanged).
 Filename: "{sys}\schtasks.exe"; Parameters: "/Create /TN ""Zip Buddy\ZipBuddyUpdateTask"" /TR """"{app}\ZipBuddyUpdater.exe"""" --auto --silent"" /SC DAILY /F"; Flags: runhidden; Tasks: autoupdate
 
 [UninstallRun]

@@ -54,7 +54,19 @@ O PR #482144 recebeu o label `Validation-Unattended-Failed`: *"failed to install
 ### Tentativa 1 — `ElevationRequirement: elevationRequired` (não resolveu)
 Adicionamos `ElevationRequirement: elevationRequired` com `Scope: machine`. O bot revalidou (~2h depois) e **falhou novamente**.
 
-### Tentativa 2 — escopo de usuário (aplicada)
+### Tentativa 2 — escopo de usuário (aplicada, não resolveu)
+O bot revalidou em 17/11 22:40 e **falhou novamente**, com o YAML correto no PR. Conclusão: o problema não é o manifesto.
+
+### Tentativa 3 — remover `[Run]` que inicia a UI em instalação silenciosa (aplicada)
+O `.iss` tinha uma entrada `skipifnotsilent` que executava o launcher (`--register-context-menu`) durante instalações silenciosas. Em sandbox sem sessão interativa, o WinUI pode exibir `MessageBox` modal → o validador interpreta como "user input". Entrada removida; instalador recompilado:
+
+- Novo SHA-256 do instalador: `4EBD60716AB9FDC1F2E1202C28DEE2A684BF568C5AC9DC9F41E937521A21FA1A`
+- Novo SHA-256 do portable: `55D2A754676C34853586C5268D35726647962360F413FF32683748808AF9EAFF`
+- `manifest.json`: `957ED3551C3FDFBBF4B74274C9B628247CA10BFD390F091ED3F54DB938D4DF83`
+
+⚠️ **Exige re-upload dos assets na release v1.1.0** (instalador, portable, `.sha256` e `manifest.json`) e atualização do hash no manifesto do PR.
+
+### (histórico) Tentativa 2 detalhes — escopo de usuário
 O instalador suporta `/CURRENTUSER` (validado localmente pelo `verify_release_candidate.ps1`, que instala e desinstala silenciosamente). Mudança **apenas no manifesto** — o binário/hash não muda:
 
 ```yaml
