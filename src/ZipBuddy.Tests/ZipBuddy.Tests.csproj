@@ -19,6 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestAssets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ZipBuddy.Core\ZipBuddy.Core.csproj" />
     <ProjectReference Include="..\ZipBuddy.Formats\ZipBuddy.Formats.csproj" />
     <ProjectReference Include="..\ZipBuddy.Infrastructure\ZipBuddy.Infrastructure.csproj" />

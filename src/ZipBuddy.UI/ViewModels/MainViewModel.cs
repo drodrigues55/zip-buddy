@@ -181,15 +181,36 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IsBusy = true;
         BusyTitle = "Opening Archive";
         BusyDetails = Path.GetFileName(filePath);
+        OperationPercent = 0;
+        OperationItemPercent = 0;
+        CurrentItemName = Path.GetFileName(filePath);
+        CurrentItemPercentText = "0%";
+        OperationTotalPercentText = "0%";
+        OperationProcessedCount = string.Empty;
 
         try
         {
             var passwordAttempt = password;
+            var passwordAttempts = 0;
             while (true)
             {
                 try
                 {
                     var info = await _engine.OpenArchiveAsync(filePath, passwordAttempt, openCts.Token);
+
+                    // Some formats (e.g. RAR with encrypted entries only) can be enumerated without
+                    // a password but still need one to read/extract entries. Ask now so the password
+                    // is cached for subsequent operations instead of failing later at 0%.
+                    if (string.IsNullOrEmpty(passwordAttempt) && info.Entries.Any(e => e.IsEncrypted) &&
+                        RequestPasswordCallback != null)
+                    {
+                        passwordAttempt = await RequestPasswordCallback();
+                        if (string.IsNullOrEmpty(passwordAttempt))
+                            return;
+
+                        continue;
+                    }
+
                     _currentArchivePassword = passwordAttempt;
                     CurrentArchive = info;
                     HasArchive = true;
@@ -206,9 +227,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    // If encrypted and no password provided, prompt user and retry.
-                    if (RequestPasswordCallback != null && ex.Message.Contains("password", StringComparison.OrdinalIgnoreCase))
+                    // If encrypted and no password provided, prompt user and retry (bounded).
+                    if (RequestPasswordCallback != null && OperationResult.IndicatesPasswordFailure(ex.Message))
                     {
+                        if (++passwordAttempts > 3)
+                        {
+                            _loggingService.Warn($"Password attempts exhausted for '{Path.GetFileName(filePath)}'.");
+                            return;
+                        }
+
                         passwordAttempt = await RequestPasswordCallback();
                         if (string.IsNullOrEmpty(passwordAttempt))
                             return;
@@ -232,8 +259,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             if (ReferenceEquals(_openCts, openCts))
                 _openCts = null;
-            if (_activeCts == null)
-                IsBusy = false;
+            // Always clear the overlay. Depending on _activeCts here could leave the UI stuck
+            // at 0% when OpenArchiveAsync is called while another operation's CTS is alive.
+            IsBusy = false;
         }
     }
 
