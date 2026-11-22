@@ -860,10 +860,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             var currentRequest = requestWithProgress;
             var result = await _engine.ExtractAsync(currentRequest, _activeCts.Token);
 
-            while (!result.Success && !result.IsCancelled && RequestPasswordCallback != null &&
-                   (result.ErrorMessage?.Contains("password", StringComparison.OrdinalIgnoreCase) == true ||
-                    result.ErrorMessage?.Contains("cryptographic", StringComparison.OrdinalIgnoreCase) == true ||
-                    result.ErrorMessage?.Contains("encryption", StringComparison.OrdinalIgnoreCase) == true))
+            while (!result.Success && !result.IsCancelled && !result.UnsupportedFeature && RequestPasswordCallback != null &&
+                   OperationResult.IndicatesPasswordFailure(result.ErrorMessage))
             {
                 var newPassword = await RequestPasswordCallback();
                 if (string.IsNullOrEmpty(newPassword))

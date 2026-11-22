@@ -21,6 +21,12 @@ public record OperationResult
     /// </summary>
     public bool RequiresPassword { get; init; }
 
+    /// <summary>
+    /// True when the archive uses a feature this build cannot process (e.g. encrypted multi-volume RAR).
+    /// Callers must not treat these failures as password errors or retry indefinitely.
+    /// </summary>
+    public bool UnsupportedFeature { get; init; }
+
     public static OperationResult Succeeded(int filesProcessed, long bytesProcessed, TimeSpan elapsed, int filesSkipped = 0) =>
         new()
         {

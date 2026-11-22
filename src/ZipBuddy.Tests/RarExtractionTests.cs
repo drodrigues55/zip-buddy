@@ -51,6 +51,25 @@ public class RarExtractionTests : IDisposable
         Assert.True(OperationResult.IndicatesPasswordFailure(ex.Message), $"Unexpected message: {ex.Message}");
     }
 
+    [Fact]
+    public async Task ExtractEncryptedMultiVolumeRar_ReportsUnsupportedFeature_NotPasswordError()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "TestAssets", "Rar", "MultiVolume", "Rar.EncryptedParts.part01.rar");
+        var result = await _engine.ExtractAsync(new ExtractionRequest
+        {
+            ArchiveFilePath = path,
+            DestinationDirectory = Path.Combine(_workDir, "multivolume"),
+            Password = "test",
+            DefaultConflictPolicy = ConflictPolicy.Overwrite
+        });
+
+        Assert.False(result.Success);
+        Assert.True(result.UnsupportedFeature);
+        Assert.False(result.RequiresPassword);
+        Assert.False(OperationResult.IndicatesPasswordFailure(result.ErrorMessage));
+        Assert.Contains("multi-volume", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Theory]
     [InlineData("Rar.rar", null)]
     [InlineData("Rar.encrypted_filesAndHeader.rar", "test")]

@@ -368,6 +368,17 @@ public abstract class ArchiveProviderBase : IArchiveProvider
         {
             return OperationResult.Cancelled(filesProcessed, bytesProcessed, stopwatch.Elapsed);
         }
+        catch (Exception ex) when (ex.Message.Contains("multi-volume", StringComparison.OrdinalIgnoreCase))
+        {
+            // SharpCompress cannot decrypt RAR volumes. Do not expose the raw message to the UI:
+            // it contains "password" and would trigger an endless password prompt at 0%.
+            return OperationResult.Failed(
+                "This RAR uses multi-volume protection, which this build cannot process. Open it with WinRAR or 7-Zip, or re-create it as a single-volume archive.",
+                ex.ToString(),
+                filesProcessed,
+                bytesProcessed)
+            with { UnsupportedFeature = true };
+        }
         catch (System.Security.Cryptography.CryptographicException ex)
         {
             return OperationResult.Failed($"Incorrect archive password or archive encryption error: {ex.Message}", ex.ToString(), filesProcessed, bytesProcessed);

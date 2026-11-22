@@ -284,7 +284,7 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
 
             var result = await _engine.TestArchiveAsync(request, _cts.Token);
 
-            while (!result.Success && !result.IsCancelled && !_cts.IsCancellationRequested &&
+            while (!result.Success && !result.IsCancelled && !_cts.IsCancellationRequested && !result.UnsupportedFeature &&
                    (result.RequiresPassword || OperationResult.IndicatesPasswordFailure(result.ErrorMessage)))
             {
                 password = await PromptPasswordAsync();
@@ -439,7 +439,7 @@ public sealed partial class TaskProgressWindow : Window, IDisposable
 
             var result = await _engine.ExtractAsync(request, _cts.Token);
 
-            while (!result.Success && !result.IsCancelled && !_cts.IsCancellationRequested &&
+            while (!result.Success && !result.IsCancelled && !_cts.IsCancellationRequested && !result.UnsupportedFeature &&
                    (result.RequiresPassword || OperationResult.IndicatesPasswordFailure(result.ErrorMessage)))
             {
                 password = await PromptPasswordAsync();
