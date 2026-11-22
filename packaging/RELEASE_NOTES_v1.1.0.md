@@ -33,6 +33,7 @@ A versão **v1.1.0** adiciona ferramentas de verificação e novos fluxos de com
 - Desinstalação agora remove também as chaves do menu de contexto escritas pelo app no HKCU (`--unregister-context-menu` via `[UninstallRun]`). Em instalações per-machine, usuários diferentes precisam executar `ZipBuddy.UI.exe --unregister-context-menu` uma vez em sua própria sessão para limpar seu HKCU.
 - **Página final do instalador:** opção em destaque `★ Adicionar Zip Buddy ao menu de contexto do Windows (recomendado)`, marcada por padrão na primeira instalação, e `Abrir Configurações de aplicativos padrão` (o Windows não permite definir associações padrão por código). Instalações silenciosas/winget registram o menu automaticamente. O padrão do app agora é o **menu em cascata com 12 comandos**.
 - **Identidade unificada:** os aliases legados `MyUnzip.exe` / `MyUnzipUpdater.exe` foram removidos de todo o produto — executáveis, updater, instalador, manifestos e documentação agora usam exclusivamente **Zip Buddy / ZipBuddy** e o publicador **Zip Buddy Open Source Team**. Como efeito colateral, o instalador caiu de ~165 MB para **~84 MB**.
+- **Reinstalação com manutenção:** ao executar o instalador com o app já instalado, surge uma tela **Reparar (reinstalar) / Desinstalar / Cancelar**. Instalações silenciosas (winget) seguem sem prompt.
 
 ---
 
@@ -60,6 +61,6 @@ Gerada por `packaging/prepare_github_release.ps1 -Version 1.1.0` em 16/11/2026.
 
 | Arquivo | Tamanho | Checksum SHA-256 |
 | :--- | :--- | :--- |
-| `ZipBuddySetup-x64-v1.1.0.exe` | 83,87 MB | `4EBD60716AB9FDC1F2E1202C28DEE2A684BF568C5AC9DC9F41E937521A21FA1A` |
-| `ZipBuddy-v1.1.0-windows-x64-portable.zip` | 90,08 MB | `55D2A754676C34853586C5268D35726647962360F413FF32683748808AF9EAFF` |
-| `manifest.json` (assinado RSA-SHA256) | < 1 KB | `957ED3551C3FDFBBF4B74274C9B628247CA10BFD390F091ED3F54DB938D4DF83` |
+| `ZipBuddySetup-x64-v1.1.0.exe` | 84,13 MB | `B49B6276A5F258CB818BB4FEA209C05F6AE00F8829104CE168BAF9CD3B943984` |
+| `ZipBuddy-v1.1.0-windows-x64-portable.zip` | 90,35 MB | `264DBF1CBE19848F04249FB31C94021D26277839D393F7C341B9925F4A5764D2` |
+| `manifest.json` (assinado RSA-SHA256) | < 1 KB | `356D37BEA78B4256EBE6D2460F5EA6D5CA9032F239A3987A3FD805303B7B435F` |
