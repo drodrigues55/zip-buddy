@@ -66,6 +66,15 @@ O `.iss` tinha uma entrada `skipifnotsilent` que executava o launcher (`--regist
 
 ⚠️ **Exige re-upload dos assets na release v1.1.0** (instalador, portable, `.sha256` e `manifest.json`) e atualização do hash no manifesto do PR.
 
+### Tentativa 4 — tela de manutenção no reinstall (aplicada)
+O `.iss` agora usa `InitializeSetup` + `TaskDialogMsgBox` para mostrar **Reparar (reinstalar) / Desinstalar / Cancelar** quando o setup é executado com o app já instalado. Em instalação silenciosa (`WizardSilent`) nada é exibido — o winget continua sem prompt. Instalador recompilado:
+
+- Novo SHA-256 do instalador: `B49B6276A5F258CB818BB4FEA209C05F6AE00F8829104CE168BAF9CD3B943984`
+- Portable: `264DBF1CBE19848F04249FB31C94021D26277839D393F7C341B9925F4A5764D2`
+- `manifest.json`: `356D37BEA78B4256EBE6D2460F5EA6D5CA9032F239A3987A3FD805303B7B435F`
+
+`winget validate` local e `verify_release_candidate.ps1`: 100% PASS.
+
 ### (histórico) Tentativa 2 detalhes — escopo de usuário
 O instalador suporta `/CURRENTUSER` (validado localmente pelo `verify_release_candidate.ps1`, que instala e desinstala silenciosamente). Mudança **apenas no manifesto** — o binário/hash não muda:
 
