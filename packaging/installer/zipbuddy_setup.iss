@@ -43,6 +43,16 @@ AddContextMenuCaption=★ Add Zip Buddy to the Windows context menu (RECOMMENDED
 brazilianportuguese.AddContextMenuCaption=★ Adicionar Zip Buddy ao menu de contexto do Windows (RECOMENDADO)
 OpenDefaultAppsCaption=Open Default Apps settings
 brazilianportuguese.OpenDefaultAppsCaption=Abrir Configurações de aplicativos padrão
+AlreadyInstalledInstruction=Zip Buddy is already installed
+AlreadyInstalledText=Choose an action. Repair reinstalls the application files and keeps your settings.
+AlreadyInstalledRepair=Repair (reinstall)
+AlreadyInstalledUninstall=Uninstall
+AlreadyInstalledCancel=Cancel
+brazilianportuguese.AlreadyInstalledInstruction=O Zip Buddy já está instalado
+brazilianportuguese.AlreadyInstalledText=Escolha uma ação. Reparar reinstala os arquivos do aplicativo e preserva suas configurações.
+brazilianportuguese.AlreadyInstalledRepair=Reparar (reinstalar)
+brazilianportuguese.AlreadyInstalledUninstall=Desinstalar
+brazilianportuguese.AlreadyInstalledCancel=Cancelar
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -146,6 +156,62 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 ; interactive installs, and can always be enabled later in the app Settings.
 ; Scheduled task for automatic updates (unchanged).
 Filename: "{sys}\schtasks.exe"; Parameters: "/Create /TN ""Zip Buddy\ZipBuddyUpdateTask"" /TR """"{app}\ZipBuddyUpdater.exe"""" --auto --silent"" /SC DAILY /F"; Flags: runhidden; Tasks: autoupdate
+
+[Code]
+const
+  UninstallSubKey = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{8B036367-AE8C-4D88-B1F3-E18F2E23A534}_is1';
+
+function IsAppInstalled(): Boolean;
+begin
+  Result := RegKeyExists(HKLM, UninstallSubKey) or RegKeyExists(HKCU, UninstallSubKey);
+end;
+
+function GetUninstallerPath(): String;
+begin
+  Result := '';
+  if not RegQueryStringValue(HKLM, UninstallSubKey, 'UninstallString', Result) then
+    RegQueryStringValue(HKCU, UninstallSubKey, 'UninstallString', Result);
+  StringChange(Result, '"', '');
+end;
+
+function InitializeSetup(): Boolean;
+var
+  Labels: TArrayOfString;
+  Answer, ExitCode: Integer;
+  Uninstaller: String;
+begin
+  Result := True;
+  { Never block unattended/winget installs - they must stay silent. }
+  if WizardSilent or (not IsAppInstalled()) then
+    Exit;
+
+  SetArrayLength(Labels, 3);
+  Labels[0] := CustomMessage('AlreadyInstalledRepair');
+  Labels[1] := CustomMessage('AlreadyInstalledUninstall');
+  Labels[2] := CustomMessage('AlreadyInstalledCancel');
+
+  Answer := TaskDialogMsgBox(
+    CustomMessage('AlreadyInstalledInstruction'),
+    CustomMessage('AlreadyInstalledText'),
+    mbInformation,
+    MB_YESNOCANCEL,
+    Labels,
+    0);
+
+  case Answer of
+    IDYES:
+      Result := True;  { Repair / reinstall: continue with existing settings }
+    IDNO:
+      begin
+        Uninstaller := GetUninstallerPath();
+        if Uninstaller <> '' then
+          Exec(Uninstaller, '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART', '', SW_SHOW, ewWaitUntilTerminated, ExitCode);
+        Result := False;
+      end;
+  else
+    Result := False;   { Cancel }
+  end;
+end;
 
 [UninstallRun]
 ; Remove the scheduled task (elevated context is fine for HKLM/task scheduler).
